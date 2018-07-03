@@ -1,0 +1,211 @@
+{% extends 'baseLouvre.html.twig' %}
+
+{% block title %}Achat de billets Louvre{% endblock %}
+
+{% block body %}
+
+    <div class="text-center margin-top margin-bottom menu">
+
+        <a href="/">
+            <button type="button" class="btn btn-secondary">
+                <i class="fa fa-info-circle"></i>
+                Infos tarifs
+            </button>
+
+        </a>
+        <a href="/billets">
+
+            <button type="button" class="btn btn-secondary">
+                <i class="fa fa-cart-arrow-down"></i>
+                Billeterie
+            </button>
+        </a>
+
+    </div>
+
+    <div class="content">
+
+        {% if step == 1 %}
+
+            <div class="container" id="step1">
+
+                <h1>Étape 1
+                </h1>
+
+                <h2 class="text-center">Reservez le nombre de billets souhaités</h2>
+                <div class="well">
+                    {{ form_start(form, {'attr': {'class': 'form-horizontal'}}) }}
+
+                    {# Les erreurs générales du formulaire. #}
+                    {{ form_errors(form) }}
+                    <div class="form-group">
+                        {{ form_errors(form.nombre) }}
+                        <i class="fa fa-minus-square" onclick="decrementeRange()"></i>
+
+                        {{ form_widget(form.nombre, {'attr': {'class': 'form-control-range'}}) }}
+
+                        <i class="fa fa-plus-square" onclick="incrementeRange()"></i>
+                        <span id="nbrTicket">1</span>
+
+                    </div>
+
+                    <div class="form-inline">
+                        {{ form_errors(form.date) }}
+                        {{ form_errors(form.mail) }}
+                        <div class="col-sm-6">
+
+                            {{ form_widget(form.date) }}
+                        </div>
+                        <div class="col-sm-6">
+
+                            {{ form_widget(form.mail) }}
+                        </div>
+                    </div>
+
+                    {{ form_rest(form) }}
+                    {{ form_end(form) }}
+                </div>
+            </div>
+
+        {% endif %}
+
+        {% if step == 2 %}
+            <h1>
+                formulaire etape 2
+            </h1>
+{{ form_start(form) }}
+{{ form_rest(form) }}
+{{ form_end(form) }}
+        {% endif %}
+    </div>
+
+    <script>
+
+        !function (a) {
+            a.fn.datepicker.dates.fr = {
+                days: [
+                    "dimanche",
+                    "lundi",
+                    "mardi",
+                    "mercredi",
+                    "jeudi",
+                    "vendredi",
+                    "samedi"
+                ],
+                daysShort: [
+                    "dim.",
+                    "lun.",
+                    "mar.",
+                    "mer.",
+                    "jeu.",
+                    "ven.",
+                    "sam."
+                ],
+                daysMin: [
+                    "d",
+                    "l",
+                    "ma",
+                    "me",
+                    "j",
+                    "v",
+                    "s"
+                ],
+                months: [
+                    "janvier",
+                    "février",
+                    "mars",
+                    "avril",
+                    "mai",
+                    "juin",
+                    "juillet",
+                    "août",
+                    "septembre",
+                    "octobre",
+                    "novembre",
+                    "décembre"
+                ],
+                monthsShort: [
+                    "janv.",
+                    "févr.",
+                    "mars",
+                    "avril",
+                    "mai",
+                    "juin",
+                    "juil.",
+                    "août",
+                    "sept.",
+                    "oct.",
+                    "nov.",
+                    "déc."
+                ],
+                today: "Aujourd'hui",
+                monthsTitle: "Mois",
+                clear: "Effacer",
+                weekStart: 1,
+                format: "dd-mm-yyyy"
+            }
+        }(jQuery);
+
+        $(document).ready(function () {
+
+            var options = {
+                language: 'fr',
+                calendarWeeks: true,
+                autoclose: true,
+                daysOfWeekDisabled: [2],
+                todayHighlight: true,
+                modal: true
+            }
+
+            $('.datepicker').datepicker(options);
+
+            $('#datepickerBirthday').datepicker(options);
+
+            $('#louvrebundle_billetsoption_nombre').change(function (value) {
+                console.log($('#louvrebundle_billetsoption_nombre').val());
+                $('#nbrTicket').text($('#louvrebundle_billetsoption_nombre').val());
+            });
+
+            function validerReservation() {
+                console.log('yop');
+            }
+
+        });
+
+        function decrementeRange() {
+
+            valeur = parseInt($('#nbrTicket').text()) - 1;
+            if (valeur >= 1) {
+                document.getElementById("louvrebundle_billetsoption_nombre").stepDown(1);
+                $('#nbrTicket').text(valeur);
+            }
+
+        }
+        function incrementeRange() {
+            valeur = parseInt($('#nbrTicket').text()) + 1;
+            if (valeur <= 50) {
+                document.getElementById("louvrebundle_billetsoption_nombre").stepUp(1);
+                $('#nbrTicket').text(valeur);
+            }
+
+        }
+        function validReservation() {
+            $('#step1').fadeOut(100, "linear", function () {
+                $('#step2').fadeIn(100)
+            });
+
+        }
+        function retourReserv() {
+            $('#step2').fadeOut(100, "linear", function () {
+                $('#step1').fadeIn(100)
+            });
+
+        }
+
+        function logtest() {
+            console.log(document.forms['n_form'].elements['halfDay'].checked);
+
+        }
+    </script>
+
+{% endblock %}

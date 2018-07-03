@@ -1,0 +1,152 @@
+body {
+    background-color: rgba(0, 0, 0, 0.938);
+    background-image: url('../images/louvre_nuit.jpg');
+    background-repeat: no-repeat;
+    background-position: top;
+    color: white;
+    font-family: 'Roboto', sans-serif;
+}
+
+.hidden {
+    display: none;
+}
+
+.margin-left {
+    margin-left: 25px;
+}
+
+.margin-right {
+    margin-right: 25px;
+}
+
+h1,
+h2,
+h3,
+p {
+    /*  background-color: rgba(26, 21, 15, 0.712); */
+    text-align: justify;
+    margin-top: 30px
+}
+
+.menu>a>.btn-secondary {
+    background-color: rgb(238, 238, 238);
+    color: black;
+    height: 40px;
+    width: 165px;
+    margin-top: 10px;
+}
+
+.menu>a>.btn-secondary>.fa {
+    font-size: 1.6em;
+    color: black;
+    margin-right: 8px;
+}
+
+.content {
+    background-color: rgba(26, 21, 15, 0.712);
+    margin-left: 10px;
+    min-width: 330px;
+    max-width: 600px;
+    padding: 20px;
+    margin: auto;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.margin-top {
+    margin-top: 40px;
+}
+
+.margin-bottom {
+    margin-bottom: 40px;
+}
+
+.table-condensed {
+    position: absolute;
+    max-width: 400px;
+    margin: auto;
+    background-color: white;
+    border-style: solid;
+    border-color: black;
+    border-radius: 8px;
+    border-collapse: separate;
+}
+
+.datepicker {
+    max-width: 200px;
+}
+
+.datepicker table {
+    min-width: 250px;
+    max-width: 350px;
+        color: black
+}
+
+.datepicker table tr td span {
+    margin: 3%
+}
+
+#louvrebundle_billetsoption_nombre {
+    display: inline-block;
+    max-width: 100px;
+    margin-top: 30px;
+    padding: 0;
+    border: 0;
+}
+
+.form-group>label {
+    display: block;
+}
+
+#nbrTicket {
+    float: right;
+    font-size: 1.5em;
+    color: black;
+    background-color: white;
+    min-width: 40px;
+    text-align: center;
+    border-radius: 4px;
+}
+
+.fa-minus-square,
+.fa-plus-square {
+    position: relative;
+    margin-bottom: 20px;
+    font-size: 24px;
+    margin: 12px;
+}
+
+.form-check-inline {
+    margin-right: 20px;
+    width: 120px;
+    background-color: white;
+    color: black;
+    border-radius: 4px;
+    text-align: left;
+}
+
+.form-check-input {
+    width: 20px;
+    height: 20px;
+    margin-left: -25px
+}
+
+.list-group,
+.badge-pill {
+    color: black;
+}
+
+.tableau {
+    color: black;
+    border-radius: 4px;
+}
+
+.tableau>.row {
+    background-color: white;
+    border-radius: 4px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: black;
+}

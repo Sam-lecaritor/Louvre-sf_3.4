@@ -1,0 +1,95 @@
+{% extends 'baseLouvre.html.twig' %}
+
+{% block title %}Accueil Louvre{% endblock %}
+
+{% block body %}
+<div class="text-center margin-top margin-bottom menu">
+
+    <a href="/">
+        <button type="button" class="btn btn-secondary">
+            <i class="fa fa-info-circle"></i>
+            Infos tarifs
+        </button>
+
+    </a>
+    <a href="/billets">
+
+        <button type="button" class="btn btn-secondary">
+            <i class="fa fa-cart-arrow-down"></i>
+            Billeterie
+        </button>
+    </a>
+    {#         <a href="panier.html">
+
+            <button type="button" class="btn btn-secondary">
+                <i class="fa fa-credit-card"></i>
+                Payement
+            </button>
+
+        </a> #}
+
+</div>
+
+    <div class="content">
+
+        <h1 class="text-center">
+            bienvenue sur la billeterie en ligne du Louvre
+        </h1>
+
+        <h2>
+            Tarifs et conditions
+        </h2>
+
+        <p>
+            Le musée du Louvre est ouvert chaque jours, sauf :
+            <ul>
+                <li>les mardi</li>
+                <li>le 1er Mai</li>
+                <li>le 1er Novembre</li>
+                <li>le 25 décembre</li>
+            </ul>
+        </p>
+
+        <p>
+            Il existe 2 types de billets : le billet « Journée » et le billet « Demi-journée » (il ne permet de rentrer qu’à partir de 14h00). L'entrée est gratuite pour les enfants de moins de quatres ans.
+
+        </p>
+
+        <h3>Liste des tarifs</h3>
+
+        <ul>
+            <li>
+                De 4 à 12 ans : 8€
+            </li>
+            <li>
+                De 12 à 60 ans : 18€
+            </li>
+            <li>
+                + de 60 ans : 12€
+            </li>
+            <li>
+                Tarif réduit : 10€ (étudiant, employé du musée, d’un service du Ministère de la Culture, militaire) En cas de tarif reduit,
+                <strong>un justificatif vous sera demandé a l'entré</strong>
+                .
+            </li>
+        </ul>
+
+        <h3>
+            Réception des billets</h3>
+
+        <p>Une fois votre commande validée, les billets vous seront envoyés sur votre boite mail.</p>
+
+        <h3>Paiement</h3>
+
+        <p>
+            La soultion de payement par cartes bancaires que nous proposont est un systeme securisé.
+        </p>
+
+        <p>
+            Aucune de vos données bancaires ne transitent par nos services et ne sont donc jamais enregistrées.
+        </p>
+
+    </div>
+
+
+{% endblock %}
