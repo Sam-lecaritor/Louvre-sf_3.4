@@ -21,4 +21,6 @@ security:
             #http_basic: ~
 
             # https://symfony.com/doc/current/security/form_login_setup.html
-            #form_login: ~
+
+            switch_user: ~
+            logout_on_user_change: true
