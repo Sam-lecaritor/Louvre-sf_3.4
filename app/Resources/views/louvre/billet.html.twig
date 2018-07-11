@@ -28,7 +28,32 @@
     </div>
 
     <div class="content">
+        {% if message_success == null and step != 1 %}
+            {% if message_alert %}
 
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+
+                    {{ message_alert }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+            {% endif %}
+
+            {% if message_info %}
+                <div class="alert alert-light text-center alertinfo" role="alert">
+
+                    {{ message_info }}
+
+                </div>
+
+            {% endif %}
+
+            <div class="annulation text-center">
+                <a class="btn btn-danger" href="/annulation" role="button">Annuler commande</a>
+            </div>
+        {% endif %}
         {% if step == 1 %}
 
             <div class="container" id="step1">
@@ -54,8 +79,10 @@
                     </div>
 
                     <div class="form-inline">
+
                         {{ form_errors(form.date) }}
                         {{ form_errors(form.mail) }}
+
                         <div class="col-sm-6">
 
                             {{ form_widget(form.date) }}
@@ -69,38 +96,37 @@
                     {{ form_rest(form) }}
                     {{ form_end(form) }}
                 </div>
-            </div>
 
-        {% endif %}
+                <div id="places-rest" class="alert alert-success hidden" role="alert"></div>
+            </br>
 
-        {% if step == 2 %}
-            <h1>
-                formulaire etape 2
-            </h1>
-            {# {{ form_start(form) }}
-            {{ form_rest(form) }}
-            {{ form_end(form) }} #}
+        </div>
 
-            {% form_theme form 'louvre/form_theme.html.twig' %}
+    {% endif %}
 
-            {{ form(form) }}
+    {% if step == 2 %}
+        <h1>
+            Étape 2
+        </h1>
 
-                {#       {% for message in messages %}
+        {% form_theme form 'louvre/form_theme.html.twig' %}
 
-            {% endfor %} #}
+        {{ form(form) }}{% endif %}
 
-            {% endif %}
+        {% if step == 3 %}
 
-            {% if step == 3 %}
-
-                <h2>paiement stripe</h2>
+            {% if message_success == null %}
+                <h1>
+                    Étape 3
+                </h1>
+                <h2>paiement carte bancaire</h2>
 
                 <div class="stripe">
 
                     <form action="/billets" method="post" id="payment-form">
                         <div class="form-row">
                             <label for="card-element">
-                                Paiement par carte Bancaire
+                                Paiement securisé
                             </label>
                             <div id="card-element">
                                 <!-- A Stripe Element will be inserted here. -->
@@ -110,209 +136,248 @@
                             <div id="card-errors" role="alert"></div>
                         </div>
 
-                        <button>Submit Payment</button>
+                        <button class="btn btn-success margin-top-half">Valider achat</button>
                     </form>
+
+                </div>
+            {% endif %}
+
+            {% if message_success != null %}
+
+                <div class="alert text-center">
+                    <h1 class="display-4">Félicitation!</h1>
+                    <p class="lead">Le paiement de votre achat a été validé</p>
+                    <p>Vous allez recevoir vos billets sur votre boite mail.</p>
 
                 </div>
 
             {% endif %}
+        {% endif %}
 
-        </div>
+    </div>
 
-        <script>
+    {% block javascripts %}
 
-            !function (a) {
-                a.fn.datepicker.dates.fr = {
-                    days: [
-                        "dimanche",
-                        "lundi",
-                        "mardi",
-                        "mercredi",
-                        "jeudi",
-                        "vendredi",
-                        "samedi"
-                    ],
-                    daysShort: [
-                        "dim.",
-                        "lun.",
-                        "mar.",
-                        "mer.",
-                        "jeu.",
-                        "ven.",
-                        "sam."
-                    ],
-                    daysMin: [
-                        "d",
-                        "l",
-                        "ma",
-                        "me",
-                        "j",
-                        "v",
-                        "s"
-                    ],
-                    months: [
-                        "janvier",
-                        "février",
-                        "mars",
-                        "avril",
-                        "mai",
-                        "juin",
-                        "juillet",
-                        "août",
-                        "septembre",
-                        "octobre",
-                        "novembre",
-                        "décembre"
-                    ],
-                    monthsShort: [
-                        "janv.",
-                        "févr.",
-                        "mars",
-                        "avril",
-                        "mai",
-                        "juin",
-                        "juil.",
-                        "août",
-                        "sept.",
-                        "oct.",
-                        "nov.",
-                        "déc."
-                    ],
-                    today: "Aujourd'hui",
-                    monthsTitle: "Mois",
-                    clear: "Effacer",
-                    weekStart: 1,
-                    format: "dd-mm-yyyy"
-                }
-            }(jQuery);
+        {% if step == 1 %}
 
-            $(document).ready(function () {
-
-                var options = {
-                    language: 'fr',
-                    calendarWeeks: true,
-                    autoclose: true,
-                    daysOfWeekDisabled: [2],
-                    todayHighlight: true,
-                    modal: true
-                }
-
-                $('.datepicker').datepicker(options);
-
-                // $('#datepickerBirthday').datepicker(options);
-
-                $('#louvrebundle_billetsoption_nombre').change(function (value) {
-                    console.log($('#louvrebundle_billetsoption_nombre').val());
-                    $('#nbrTicket').text($('#louvrebundle_billetsoption_nombre').val());
-                });
-
-                //debut stripe
-
-                var stripe = Stripe('pk_test_qUHGikSv9mP2qIr9bMRoCUq2');
-                var elements = stripe.elements();
-                var style = {
-                    base: {
-                        // Add your base input styles here. For example:
-                        fontSize: '16px',
-                        color: "#32325d"
+            <script>
+                !function (a) {
+                    a.fn.datepicker.dates.fr = {
+                        days: [
+                            "dimanche",
+                            "lundi",
+                            "mardi",
+                            "mercredi",
+                            "jeudi",
+                            "vendredi",
+                            "samedi"
+                        ],
+                        daysShort: [
+                            "dim.",
+                            "lun.",
+                            "mar.",
+                            "mer.",
+                            "jeu.",
+                            "ven.",
+                            "sam."
+                        ],
+                        daysMin: [
+                            "d",
+                            "l",
+                            "ma",
+                            "me",
+                            "j",
+                            "v",
+                            "s"
+                        ],
+                        months: [
+                            "janvier",
+                            "février",
+                            "mars",
+                            "avril",
+                            "mai",
+                            "juin",
+                            "juillet",
+                            "août",
+                            "septembre",
+                            "octobre",
+                            "novembre",
+                            "décembre"
+                        ],
+                        monthsShort: [
+                            "janv.",
+                            "févr.",
+                            "mars",
+                            "avril",
+                            "mai",
+                            "juin",
+                            "juil.",
+                            "août",
+                            "sept.",
+                            "oct.",
+                            "nov.",
+                            "déc."
+                        ],
+                        today: "Aujourd'hui",
+                        monthsTitle: "Mois",
+                        clear: "Effacer",
+                        weekStart: 1,
+                        format: "dd-MM-yyyy"
                     }
-                };
-                // Create an instance of the card Element. var card = elements.create('card', {style: style});  Add an instance of the card Element into the `card-element`<div>.
-                var card = elements.create('card', {style: style});
-                card.mount('#card-element');
+                }(jQuery);
 
-                card.addEventListener('change', function (event) {
-                    var displayError = document.getElementById('card-errors');
-                    if (event.error) {
-                        displayError.textContent = event.error.message;
-                    } else {
-                        displayError.textContent = '';
+                function decrementeRange() {
+
+                    valeur = parseInt($('#nbrTicket').text()) - 1;
+                    if (valeur >= 1) {
+                        document.getElementById("louvrebundle_billetsoption_nombre").stepDown(1);
+                        $('#nbrTicket').text(valeur);
                     }
-                });
 
-                var form = document.getElementById('payment-form');
-                form.addEventListener('submit', function (event) {
-                    event.preventDefault();
+                }
+                function incrementeRange() {
+                    valeur = parseInt($('#nbrTicket').text()) + 1;
+                    if (valeur <= 50) {
+                        document.getElementById("louvrebundle_billetsoption_nombre").stepUp(1);
+                        $('#nbrTicket').text(valeur);
+                    }
 
-                    stripe.createToken(card).then(function (result) {
-                        if (result.error) {
-                            // Inform the customer that there was an error.
-                            var errorElement = document.getElementById('card-errors');
-                            errorElement.textContent = result.error.message;
-                        } else {
-                            // Send the token to your server.
-                            stripeTokenHandler(result.token);
+                }
 
-                        }
+                $(document).ready(function () {
+                    var now = "{{ " now "|date(" d / m / Y ") }}";
+                    var nowDay = "{{ " now "|date(" d ")}}";
+                    var nowmonth = "{{ " now "|date(" m ") }}";
+                    var currentYear = "{{ " now "|date(" Y ") }}";
+                    var nextYear = parseInt(currentYear) + 1;
+                    var endDate = nowDay + "/" + nowmonth + "/" + nextYear;
+                    var options = {
+                        language: 'fr',
+                        calendarWeeks: true,
+                        autoclose: true,
+                        daysOfWeekDisabled: [2],
+                        todayHighlight: true,
+                        datesDisabled: [
+                            "1/5/" + currentYear,
+                            "1/11/" + currentYear,
+                            "25/12/" + currentYear,
+                            "1/5/" + nextYear,
+                            "1/11/" + nextYear,
+                            "25/12/" + nextYear
+                        ],
+                        endDate: endDate,
+                        startDate: now
+                    }
+                    $('.datepicker').datepicker(options);
+                    $('#louvrebundle_billetsoption_nombre').change(function (value) {
+                        console.log($('#louvrebundle_billetsoption_nombre').val());
+                        $('#nbrTicket').text($('#louvrebundle_billetsoption_nombre').val());
+                    });
+                    $('.datepicker').on('changeDate', function () {
+
+                        var chooseDate = $('.datepicker').datepicker('getDate');
+
+                        console.log('valueeeeeeeeee ****** ' + $('.datepicker').val());
+
+                        chooseDate = (chooseDate.getFullYear() + "-" + (
+                        (chooseDate.getMonth() + 1) > 9 ? (chooseDate.getMonth() + 1) : ("0" + (
+                        chooseDate.getMonth() + 1))) + "-" + (
+                        chooseDate.getDate() > 9 ? chooseDate.getDate() : "0" + chooseDate.getDate()));
+
+                        console.log(typeof(chooseDate) + " ==> date " + chooseDate);
+
+                        $.get("{{path('test_billet')}}", {
+                            date: chooseDate
+                        }, function (data, status) {
+                            console.log("Data: " + data.placesRestantes + "\nStatus: " + status);
+                            console.log("date choisie: " + chooseDate + " valeur " + data.date);
+                            //$('#places-rest').toggleClass('hidden-alert', false);
+                            $('#places-rest').fadeIn(100, "linear", function () {
+                                $('#places-rest').text('Places disponibles pour cette date: ' + data.placesRestantes);
+                            });
+
+                        });
                     });
                 });
-                function stripeTokenHandler(token) {
-                    // Insert the token ID into the form so it gets submitted to the server
-                    var form = document.getElementById('payment-form');
-                    var hiddenInput = document.createElement('input');
-                    hiddenInput.setAttribute('type', 'hidden');
-                    hiddenInput.setAttribute('name', 'stripeToken');
-                    hiddenInput.setAttribute('value', token.id);
-                    form.appendChild(hiddenInput);
-                    console.log(token.id + "*************** TOKENNNNN ******************");
-                    // Submit the form
-                    form.submit();
-                }
-                //4242 4242 4242 4242 test@mail.com 12 / 19 123 86000
-                // fin stripe
-
-            });
-
-            function decrementeRange() {
-
-                valeur = parseInt($('#nbrTicket').text()) - 1;
-                if (valeur >= 1) {
-                    document.getElementById("louvrebundle_billetsoption_nombre").stepDown(1);
-                    $('#nbrTicket').text(valeur);
-                }
-
-            }
-            function incrementeRange() {
-                valeur = parseInt($('#nbrTicket').text()) + 1;
-                if (valeur <= 50) {
-                    document.getElementById("louvrebundle_billetsoption_nombre").stepUp(1);
-                    $('#nbrTicket').text(valeur);
-                }
-
-            }
-            function validReservation() {
-                $('#step1').fadeOut(100, "linear", function () {
-                    $('#step2').fadeIn(100)
-                });
-
-            }
-            function retourReserv() {
-                $('#step2').fadeOut(100, "linear", function () {
-                    $('#step1').fadeIn(100)
-                });
-
-            }
-
-            function logtest() {
-                console.log(document.forms['n_form'].elements['halfDay'].checked);
-
-            }
-
-            //debut du script collection
-
-            $('.billet-collection').collection({
-                allow_duplicate: false,
-                allow_up: false,
-                allow_down: false,
-                add: '<a href="#" class="btn btn-default btn-add-billet" title="Add element"><i class="fa fa-plus-square margin-top margin-top" style=""></i>Ajouter un billet &nbsp;</a>',
-                'add_at_the_end': true,
-
-                // here is the magic!
-                elements_selector: 'tr.item',
-                elements_parent_selector: '%id% tbody'
-            });
-
-            //fin du script collection
-        </script>
+            </script>
+        {% endif %}
 
     {% endblock %}
+
+    <script>
+
+        //debut stripe
+        $(document).ready(function () {
+            var stripe = Stripe('pk_test_qUHGikSv9mP2qIr9bMRoCUq2');
+            var elements = stripe.elements();
+            var style = {
+                base: {
+                    // Add your base input styles here. For example:
+                    fontSize: '16px',
+                    color: "#32325d"
+                }
+            };
+
+            var card = elements.create('card', {style: style});
+            card.mount('#card-element');
+
+            card.addEventListener('change', function (event) {
+                var displayError = document.getElementById('card-errors');
+                if (event.error) {
+                    displayError.textContent = event.error.message;
+                } else {
+                    displayError.textContent = '';
+                }
+            });
+
+            var form = document.getElementById('payment-form');
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+
+                stripe.createToken(card).then(function (result) {
+                    if (result.error) {
+                        // Inform the customer that there was an error.
+                        var errorElement = document.getElementById('card-errors');
+                        errorElement.textContent = result.error.message;
+                    } else {
+                        // Send the token to your server.
+                        stripeTokenHandler(result.token);
+
+                    }
+                });
+            });
+            function stripeTokenHandler(token) {
+                // Insert the token ID into the form so it gets submitted to the server
+                var form = document.getElementById('payment-form');
+                var hiddenInput = document.createElement('input');
+                hiddenInput.setAttribute('type', 'hidden');
+                hiddenInput.setAttribute('name', 'stripeToken');
+                hiddenInput.setAttribute('value', token.id);
+                form.appendChild(hiddenInput);
+                console.log(token.id + "*************** TOKENNNNN ******************");
+                // Submit the form
+                form.submit();
+            }
+            //4242 4242 4242 4242 test@mail.com 12 / 19 123 86000
+            // fin stripe
+
+        });
+
+        //debut du script collection
+
+        $('.billet-collection').collection({
+            allow_duplicate: false,
+            allow_up: false,
+            allow_down: false,
+            add: '<a href="#" class="btn btn-default btn-add-billet margin-top-half" title="Add element"><i class="fa fa-plus-square margin-top margin-top" style=""></i>Ajouter un billet &nbsp;</a>',
+            'add_at_the_end': true,
+
+            // here is the magic!
+            elements_selector: 'tr.item',
+            elements_parent_selector: '%id% tbody'
+        });
+
+        //fin du script collection
+    </script>
+
+{% endblock %}

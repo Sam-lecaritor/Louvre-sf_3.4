@@ -26,6 +26,7 @@ class BilletType extends AbstractType
                     'class' => 'mini-input',
                     'autocomplete' =>'off',
                 ],
+                'required'=>true
             ))
             /* ->add('uniqueId') */
             ->add('nom',TextType::class, array(
@@ -33,19 +34,21 @@ class BilletType extends AbstractType
                     'class' => 'mini-input',
                     'autocomplete' =>'off',
                 ],
-                'label' => 'nom'
+                'label' => 'Nom',
+                'required'=>true
             ))
             ->add('prenom',TextType::class, array(
                 'attr' => [
                     'class' => 'mini-input',
                     'autocomplete' =>'off',
                 ],
-                'label' => 'prenom'
+                'label' => 'Prénom',
+                'required'=>true
             ))
             ->add('pays', CountryType::class, array(
-                'preferred_choices' => array('FR', 'GB', 'DE', 'ES'),
+                'preferred_choices' => array('FR', 'GB', 'DE', 'ES', 'IT'),
+                'required'=>true
             ))
-            /*  ->add('tarif') */
             ->add('demiJournee', CheckboxType::class, array(
                 'label' => 'Demi-journée',
             ))

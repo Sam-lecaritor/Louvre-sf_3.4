@@ -31,7 +31,7 @@ class Calcul
         }
 
         if ($demiJour) {
-            $prix = $prix / 2;
+            $prix = $prix;
         }
 
         return $prix;

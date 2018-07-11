@@ -196,6 +196,15 @@ a:focus {
     border-color: white;
 }
 
+.alertinfo{
+    font-size: 1.3em;
+    background-color: rgba(0, 0, 0, 0.295);
+    border-color: white;
+    border-radius: 4px;
+}
+
+
+
 @media screen and (max-width: 640px) {
     .content {
         min-width: 100%;

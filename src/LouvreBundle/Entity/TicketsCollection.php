@@ -51,9 +51,17 @@ class TicketsCollection
      */
     private $confirmed;
 
+    
+    /**
+     * @var \Date
+     *
+     * @ORM\Column(name="date", type="date")
+     */
+    private $date;
+
     /**
      * @ORM\OneToMany(targetEntity="LouvreBundle\Entity\Billet", mappedBy="TicketsCollection", cascade={"persist", "remove"})
-     *
+     * @ORM\JoinColumn(nullable=false)
      */
 
     private $billets;
@@ -68,14 +76,11 @@ class TicketsCollection
         return $this->id;
     }
 
-
     public function __construct()
     {
         $this->billets = new ArrayCollection();
 
     }
-
-
 
     /**
      * Set clientId
@@ -162,8 +167,6 @@ class TicketsCollection
         return $this;
     }
 
-
-
     /**
      * Set confirmed
      *
@@ -187,7 +190,6 @@ class TicketsCollection
     {
         return $this->confirmed;
     }
-
 
     /**
      * Add billet
@@ -224,5 +226,27 @@ class TicketsCollection
     }
 
 
+    /**
+     * Set date
+     *
+     * @param \DateTime $date
+     *
+     * @return TicketsCollection
+     */
+    public function setDate($date)
+    {
+        $this->date = $date;
 
+        return $this;
+    }
+
+    /**
+     * Get date
+     *
+     * @return \DateTime
+     */
+    public function getDate()
+    {
+        return $this->date;
+    }
 }

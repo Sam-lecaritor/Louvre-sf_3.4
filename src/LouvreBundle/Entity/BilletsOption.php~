@@ -3,6 +3,8 @@
 namespace LouvreBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 /**
  * BilletsOption
@@ -25,6 +27,7 @@ class BilletsOption
      * @var int
      *
      * @ORM\Column(name="nombre", type="integer")
+     * @Assert\Type("integer")
      */
     private $nombre;
 
@@ -32,6 +35,7 @@ class BilletsOption
      * @var \Date
      *
      * @ORM\Column(name="date", type="date")
+     * @Assert\Date()
      */
     private $date;
 
@@ -39,6 +43,7 @@ class BilletsOption
      * @var \DateTime
      *
      * @ORM\Column(name="dateCreation", type="datetime")
+     * @Assert\DateTime()
      */
 
     private $dateCreation;
@@ -55,6 +60,10 @@ class BilletsOption
      * @var string
      *
      * @ORM\Column(name="mail", type="string", length=255)
+     *  @Assert\Email(
+     *  message = "The email '{{ value }}' is not a valid email.",
+     *  checkMX = true
+     * )
      */
     private $mail;
 
@@ -77,7 +86,7 @@ class BilletsOption
      */
     public function setNombre($nombre)
     {
-        $this->nombre = $nombre;
+        $this->nombre = intval($nombre);
 
         return $this;
     }
@@ -198,5 +207,6 @@ class BilletsOption
         $this->setIdClient($id);
         
     }
+
 
 }

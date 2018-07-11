@@ -3,13 +3,12 @@
 namespace LouvreBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\RangeType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class BilletsOptionType extends AbstractType
 {
@@ -34,7 +33,7 @@ class BilletsOptionType extends AbstractType
                     'autocomplete' => "off",
                     'placeholder' => 'date de la visite',
                 ],
-                'format' => 'dd-mm-yyyy',
+                'format' => "dd-MM-yyyy",
             ))
             ->add('mail', EmailType::class, array(
                 'attr' => [

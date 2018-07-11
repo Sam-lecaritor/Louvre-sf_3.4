@@ -1,0 +1,55 @@
+{# app/Resources/views/Emails/registration.html.twig #}
+<h1>Billeterie en ligne du louvre</h1>
+
+<p>
+    Merci d'avoir commandé vos billets sur notre plateforme en ligne.
+
+</p>
+
+<p>
+    Vous trouverez ci-dessous les billets à présenter aux membres du personnel chargé de la verification des entrées.
+</p>
+
+{% for item in billets %}
+    <p>***********************************************************************</p>
+    <div>
+        <h2>Musée du Louvre</h2>
+        <p class='logomail'>
+            <img src="{{ cid }}" alt="Logo Louvre">
+        </p>
+
+    </div>
+    <h5>Date de la visite</h5>
+    <p>
+        {{commande.date|date("d/m/Y", "Europe/Paris")}}
+    </p>
+    <h5>Prix du billet</h5>
+    <p>{{item.prixUnitaire}}€</p>
+    <p>Tarif réduit :
+        {{item.tarif == 'true' ? ' oui' : 'non'}}</p>
+    <p>Demi journée :
+        {{item.demiJournee ? ' oui' : 'non'}}</p>
+    <h5>Titulaire du billet</h5>
+    <p>Nom :
+        {{item.nom}}
+        Prénom :
+        {{item.prenom}}</p>
+    <h5>Code de reservation</h5>
+    <p>{{item.uniqueId}}</p>
+
+    <p>***********************************************************************</p>
+
+    <p>
+        &nbsp;
+    </p>
+
+{% endfor %}
+
+<style>
+h2{
+    text-align:center;
+}
+.logomail{
+    text-align:left;
+}
+</style>

@@ -3,8 +3,8 @@
 namespace LouvreBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
-//use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Billet
@@ -27,13 +27,14 @@ class Billet
      * @var \Date
      *
      * @ORM\Column(name="dateNaissance", type="date")
+     * @Assert\Date()
      */
     private $dateNaissance;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="id_client", type="string", length=255)
+     * @ORM\Column(name="id_billet", type="string", length=255)
      */
     private $uniqueId;
 
@@ -41,6 +42,7 @@ class Billet
      * @var string
      *
      * @ORM\Column(name="nom", type="string", length=255)
+     * @Assert\Length(min=2)
      */
     private $nom;
 
@@ -48,6 +50,7 @@ class Billet
      * @var string
      *
      * @ORM\Column(name="prenom", type="string", length=255)
+     * @Assert\Length(min=2)
      */
     private $prenom;
 
@@ -55,6 +58,7 @@ class Billet
      * @var string
      *
      * @ORM\Column(name="pays", type="string", length=255)
+     * @Assert\Length(min=2)
      */
     private $pays;
 

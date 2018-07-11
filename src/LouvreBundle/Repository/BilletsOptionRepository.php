@@ -10,4 +10,29 @@ namespace LouvreBundle\Repository;
  */
 class BilletsOptionRepository extends \Doctrine\ORM\EntityRepository
 {
+
+    /**
+     * compte le nombre de billets mis en options pour uen date donnée
+     *
+     * @param date $date
+     * @return int
+     */
+    public function compterOptions($date)
+    {
+       
+        $date = new \dateTime($date);
+ 
+
+        $result = $this
+            ->createQueryBuilder('a')
+            ->where('a.date = :date')
+            ->setParameter('date', $date)
+            ->getQuery()
+            ->getResult();
+
+        return count($result);
+        //return $date;
+
+    }
+
 }
