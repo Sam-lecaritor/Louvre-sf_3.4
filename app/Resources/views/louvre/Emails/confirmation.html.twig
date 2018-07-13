@@ -11,45 +11,42 @@
 </p>
 
 {% for item in billets %}
-    <p>***********************************************************************</p>
-    <div>
+    <hr>
+    <div class="entete">
         <h2>Musée du Louvre</h2>
         <p class='logomail'>
             <img src="{{ cid }}" alt="Logo Louvre">
         </p>
 
     </div>
-    <h5>Date de la visite</h5>
-    <p>
-        {{commande.date|date("d/m/Y", "Europe/Paris")}}
-    </p>
-    <h5>Prix du billet</h5>
-    <p>{{item.prixUnitaire}}€</p>
-    <p>Tarif réduit :
-        {{item.tarif == 'true' ? ' oui' : 'non'}}</p>
-    <p>Demi journée :
-        {{item.demiJournee ? ' oui' : 'non'}}</p>
-    <h5>Titulaire du billet</h5>
-    <p>Nom :
-        {{item.nom}}
-        Prénom :
-        {{item.prenom}}</p>
-    <h5>Code de reservation</h5>
-    <p>{{item.uniqueId}}</p>
+    <div class="corp">
+        <h4>Date de la visite</h4>
+        <p>
+            {{commande.date|date("d/m/Y", "Europe/Paris")}}
+        </p>
+        <h4>Prix du billet</h4>
+        <p>{{item.prixUnitaire}}€</p>
+        <p>Tarif réduit :
+            {{item.tarif ? ' oui' : 'non'}}</p>
+        <p>Demi journée :
+            {{item.demiJournee ? ' oui' : 'non'}}</p>
+        <h4>Titulaire du billet</h4>
+        <p>Nom :
+            {{item.nom}}
+            Prénom :
+            {{item.prenom}}</p>
+        <h4>Code de reservation</h4>
+        <p>{{item.uniqueId}}</p>
+    </div>
+    <hr>
 
-    <p>***********************************************************************</p>
-
-    <p>
-        &nbsp;
-    </p>
+    <br>
 
 {% endfor %}
 
 <style>
-h2{
-    text-align:center;
-}
-.logomail{
-    text-align:left;
-}
+    .logomail,
+    h2 {
+        text-align: center;
+    }
 </style>

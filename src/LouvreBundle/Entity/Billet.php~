@@ -23,6 +23,13 @@ class Billet
      */
     private $id;
 
+
+    /**
+     * @ORM\ManyToOne(targetEntity="LouvreBundle\Entity\TicketsCollection", inversedBy="billets", cascade={"persist","remove"})
+     * @ORM\JoinColumn(name="collection_id", referencedColumnName="id")
+     */
+    private $collection;
+
     /**
      * @var \Date
      *
@@ -316,5 +323,53 @@ class Billet
     public function getPrixUnitaire()
     {
         return $this->prixUnitaire;
+    }
+
+    /**
+     * Set ticketCollection
+     *
+     * @param \Bundle\Entity\TicketsCollection $ticketCollection
+     *
+     * @return Billet
+     */
+    public function setTicketCollection(\Bundle\Entity\TicketsCollection $ticketCollection)
+    {
+        $this->TicketCollection = $ticketCollection;
+
+        return $this;
+    }
+
+    /**
+     * Get ticketCollection
+     *
+     * @return \Bundle\Entity\TicketsCollection
+     */
+    public function getTicketCollection()
+    {
+        return $this->TicketCollection;
+    }
+
+    /**
+     * Set collection
+     *
+     * @param \LouvreBundle\Entity\TicketsCollection $collection
+     *
+     * @return Billet
+     */
+    public function setCollection(\LouvreBundle\Entity\TicketsCollection $collection)
+    {
+        $this->collection = $collection;
+
+        return $this;
+    }
+
+    /**
+     * Get collection
+     *
+     * @return \LouvreBundle\Entity\TicketsCollection
+     */
+    public function getCollection()
+    {
+        return $this->collection;
     }
 }

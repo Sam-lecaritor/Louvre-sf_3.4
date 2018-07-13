@@ -5,11 +5,9 @@
     {# {{ form_widget(form.dateNaissance) }} #}
 {% endblock %}
 
-
 {% block collection_widget %}
     {% spaceless %}
 
-  
         {% if prototype is defined %}
             {% set attr = attr|merge({'data-prototype': form_widget(prototype)}) %}
             {% set attr = attr|merge({'data-prototype-name': prototype.vars.name}) %}
@@ -19,55 +17,81 @@
         {% set attr = attr|merge({'data-name-prefix': full_name}) %}
 
         <fieldset class="well">
-            {# <label>{{ form_label(form) }}</label> #}
 
             {{ form_errors(form) }}
-        </a>
-        {# Don't forget to add the collection attributes in your markup #}
-        <table {{ block('widget_attributes') }}>
-            <thead>
-                <th>Date de naissance</th>
-                <th>Nom,Prenom</th>
-                <th>Pays</th>
-                <th>Options</th>
-                <th>supprimer</th>
-            </thead>
-            <tbody>
 
-                {#
+            <table {{ block('widget_attributes') }}>
+                <thead>
+                    <th>Noms, Prénoms</th>
+                    <th>Pays, Age</th>
+                </thead>
+                <tbody>
+
+                    {#
                  # we can't form_widget(form) as it would render parent markup for a collection, so
                  # we iterate manually on children
                  #}
-                {% for item in form %}
-                    {{ form_widget(item) }}
-                {% endfor %}
+                    {% for item in form %}
+                        {{ form_widget(item) }}
+                    {% endfor %}
 
-            </tbody>
-        </table>
-    </fieldset>
+                </tbody>
+            </table>
+        </fieldset>
 
-{% endspaceless %}
+    {% endspaceless %}
 {% endblock %}
 
 {% block louvrebundle_billet_widget %}
 
-<tr {{ block('widget_attributes') }}>
-    <td>{{ form_widget(form.dateNaissance) }}</td>
-    <td>{{ form_widget(form.nom) }}{{ form_widget(form.prenom) }}</td>
-    <td>{{ form_widget(form.pays) }}</td>
-    <td>{{ form_widget(form.demiJournee) }}
-        {{ form_widget(form.tarif) }}</td>
-    <td class="text-center">
-        <a href="#" class="collection-remove btn btn-default btnTickets" title="Delete element">
-            <i class="fa fa-minus-square" style="font-size:20px;color:white"></i>
-        </a>
-        <a href="#" class="collection-add btn btn-default btnTickets" title="Add element">
-            <i class="fa fa-plus-square" style="font-size:20px;color:white"></i>
-        </a>
+    <tr {{ block('widget_attributes') }}>
 
-        <a href="#" class="collection-duplicate btn btn-default hidden" title="Duplicate element">
-            <span class="glyphicon glyphicon-th-large"></span></a>
+        <td>
+
+            <div class='col-sm-12'>
+                {{form_label(form.nom)}}
+                {{ form_widget(form.nom, {'attr': {'autocomplete':'off', 'required':'required'}}) }}
+            </div>
+            <div class='col-sm-12'>
+                {{form_label(form.prenom )}}
+                {{ form_widget(form.prenom, {'attr': {'autocomplete':'off', 'required':'required'}}) }}
+            </div>
+            <div class='row'>
+                <div class='col-sm-6 margin-top input-inline'>
+                    {{ form_widget(form.demiJournee) }}
+                </div>
+                <div class='col-sm-6 margin-top input-inline'>
+                    {{ form_widget(form.tarif) }}
+                </div>
+            </div>
+        </td>
+
+        <td>
+
+            <div class='col-sm-12'>
+                {{form_label(form.dateNaissance)}}
+                {{ form_widget(form.dateNaissance, {'attr': {'autocomplete':'off', 'required':'required'}}) }}
+            </div>
+            <div class='col-sm-12'>
+                {{form_label(form.pays)}}
+                {{ form_widget(form.pays, {'attr': {'autocomplete':'off', 'required':'required'}}) }}
+            </div>
+            <div class='row'>
+
+                <div class='col-sm-6  '>
+                    <p>Supprimer le billet</p>
+                </div>
+                <div class='col-sm-6 margin-top-half'>
+                    <a href="#" class="collection-remove btn btn-default btnTickets" title="Delete element">
+                        <i class="fa fa-minus-square" style="font-size:20px;color:white; "></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
     </td>
+
+    <div class='col-sm-12 margin-top'></div>
 </tr>
 
 {{ form_rest(form) }}
