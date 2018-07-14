@@ -60,7 +60,7 @@ class TicketsCollection
     private $date;
 
     /**
-     * @ORM\OneToMany(targetEntity="LouvreBundle\Entity\Billet", mappedBy="collection", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="LouvreBundle\Entity\Billet", mappedBy="collectionId", cascade={"persist", "remove"})
      */
 
     private $billets;

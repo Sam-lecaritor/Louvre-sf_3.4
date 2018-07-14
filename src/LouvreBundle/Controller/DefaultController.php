@@ -3,18 +3,17 @@
 namespace LouvreBundle\Controller;
 
 use LouvreBundle\Entity\Billet;
-use LouvreBundle\Services\Calcul;
 use LouvreBundle\Entity\BilletsOption;
-use LouvreBundle\Services\StripeLouvre;
-use LouvreBundle\Form\BilletsOptionType;
 use LouvreBundle\Entity\TicketsCollection;
-use LouvreBundle\Services\DatepickerConfig;
+use LouvreBundle\Form\BilletsOptionType;
 use LouvreBundle\Form\TicketsCollectionType;
+use LouvreBundle\Services\Calcul;
+use LouvreBundle\Services\StripeLouvre;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 
 //todo => gerer la validation des formulaires
 //todo=> gerer les erreurs de stripe
@@ -55,17 +54,19 @@ class DefaultController extends Controller
     public function billetsAction(Request $request)
     {
 
- $datepickObject= new DatepickerConfig();
-$datepick = $datepickObject->getConfig(); 
+/*  $datepickObject= new DatepickerConfig();
+$datepick = $datepickObject->getConfig();  */
 
         $session = $request->getSession();
         $em = $this->getDoctrine()->getManager();
         $billetsOption = new BilletsOption();
         $collection = new TicketsCollection();
+        $billetSimple = new Billet();
         $message_alert = null;
         $message_info = null;
         $message_success = null;
         $message_failed = null;
+
 
         if (null === ($session->get('option'))) {
 
@@ -117,6 +118,8 @@ $datepick = $datepickObject->getConfig();
                             ($ticket->getTarif() ? 0 : 1);
                             $prixUnitaire = $CalculService->calculPrixBillet($ticket->getDateNaissance(), $ticket->getDemiJournee(), $ticket->getTarif());
                             $ticket->setPrixUnitaire($prixUnitaire);
+                            /*  $ticket->setCollectionId($collection->getClientId()); */
+
                             $collection->incrementePrixTotal($prixUnitaire);
                         }
 
@@ -180,7 +183,6 @@ $datepick = $datepickObject->getConfig();
             'message_info' => $message_info,
             'message_success' => $message_success,
             'message_failed' => $message_failed,
-            'datepick' => $datepick
         ]);
 
     }

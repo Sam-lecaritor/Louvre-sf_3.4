@@ -26,9 +26,9 @@ class Billet
 
     /**
      * @ORM\ManyToOne(targetEntity="LouvreBundle\Entity\TicketsCollection", inversedBy="billets", cascade={"persist","remove"})
-     * @ORM\JoinColumn(name="collection_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="collectionId", referencedColumnName="id")
      */
-    private $collection;
+    private $collectionId;
 
     /**
      * @var \Date
@@ -325,51 +325,28 @@ class Billet
         return $this->prixUnitaire;
     }
 
+
     /**
-     * Set ticketCollection
+     * Set collectionId
      *
-     * @param \Bundle\Entity\TicketsCollection $ticketCollection
+     * @param \LouvreBundle\Entity\TicketsCollection $collectionId
      *
      * @return Billet
      */
-    public function setTicketCollection(\Bundle\Entity\TicketsCollection $ticketCollection)
+    public function setCollectionId(\LouvreBundle\Entity\TicketsCollection $collectionId = null)
     {
-        $this->TicketCollection = $ticketCollection;
+        $this->collection_id = $collectionId;
 
         return $this;
     }
 
     /**
-     * Get ticketCollection
-     *
-     * @return \Bundle\Entity\TicketsCollection
-     */
-    public function getTicketCollection()
-    {
-        return $this->TicketCollection;
-    }
-
-    /**
-     * Set collection
-     *
-     * @param \LouvreBundle\Entity\TicketsCollection $collection
-     *
-     * @return Billet
-     */
-    public function setCollection(\LouvreBundle\Entity\TicketsCollection $collection)
-    {
-        $this->collection = $collection;
-
-        return $this;
-    }
-
-    /**
-     * Get collection
+     * Get collectionId
      *
      * @return \LouvreBundle\Entity\TicketsCollection
      */
-    public function getCollection()
+    public function getCollectionId()
     {
-        return $this->collection;
+        return $this->collection_id;
     }
 }
