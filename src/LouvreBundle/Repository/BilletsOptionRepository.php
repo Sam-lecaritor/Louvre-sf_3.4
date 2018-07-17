@@ -12,26 +12,73 @@ class BilletsOptionRepository extends \Doctrine\ORM\EntityRepository
 {
 
     /**
-     * compte le nombre de billets mis en options pour uen date donnée
+     * compte le nombre de billets mis en options pour une date donnée
      *
      * @param date $date
      * @return int
      */
     public function compterOptions($date)
     {
-       
-        $date = new \dateTime($date);
- 
 
+        $date = new \dateTime($date);
+
+        $compteur = 0;
         $result = $this
             ->createQueryBuilder('a')
+            ->select('a.nombre')
             ->where('a.date = :date')
             ->setParameter('date', $date)
             ->getQuery()
             ->getResult();
 
-        return count($result);
-        //return $date;
+        //return count($result);
+
+        if ($result) {
+            foreach ($result as $key) {
+
+                $compteur += $key['nombre'];
+
+            }
+
+        }
+
+        return $compteur;
+
+    }
+/**
+ * Supprime uen mise en option par l'id client
+ *
+ * @param [string] $id
+ * @return void
+ */
+    public function findOptionByIdClient($id)
+    {
+
+        $result = $this->findOneBy(array('idClient' => $id));
+
+        if ($result) {
+            return ($result);
+
+        }
+
+    }
+
+    public function findOptionsByExpiration($datetime)
+    {
+        $result = $this
+            ->createQueryBuilder('a')
+            ->select('a.idClient')
+            ->where('a.dateCreation <= :date')
+            ->setParameter('date', $datetime)
+            ->getQuery()
+            ->getResult();
+
+        if ($result) {
+            return $result;
+
+        } else {
+            return null;
+        }
 
     }
 

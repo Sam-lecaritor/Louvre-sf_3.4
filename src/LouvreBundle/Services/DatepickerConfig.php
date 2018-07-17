@@ -5,7 +5,7 @@ class DatepickerConfig
 {
 
     private $config;
-
+//todo renvoyer un tableau de date deja full
 
 public function __construct(){
 $configDatepickerjson = file_get_contents("json/configDatepicker.json");

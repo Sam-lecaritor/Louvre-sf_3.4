@@ -16,16 +16,16 @@ services:
 
     # makes classes in src/AppBundle available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
-    AppBundle\:
-        resource: '../../src/AppBundle/*'
+    LouvreBundle\:
+        resource: '../../src/LouvreBundle/*'
         # you can exclude directories or files
         # but if a service is unused, it's removed anyway
         exclude: '../../src/AppBundle/{Entity,Repository,Tests}'
 
     # controllers are imported separately to make sure they're public
     # and have a tag that allows actions to type-hint services
-    AppBundle\Controller\:
-        resource: '../../src/AppBundle/Controller'
+    LouvreBundle\Controller\:
+        resource: '../../src/LouvreBundle/Controller'
         public: true
         tags: ['controller.service_arguments']
 
@@ -33,3 +33,6 @@ services:
     # AppBundle\Service\ExampleService:
     #     arguments:
     #         $someArgument: 'some_value'
+    # add more services, or override services that need manual wiring
+    LouvreBundle\Service\Calcul:
+        arguments: ["@doctrine.orm.entity_manager"]

@@ -10,4 +10,31 @@ namespace LouvreBundle\Repository;
  */
 class BilletRepository extends \Doctrine\ORM\EntityRepository
 {
+
+    /**
+     * compte le nombre de billets mis en options pour uen date donnée
+     *
+     * @param date $date
+     * @return int
+     */
+    public function compterBilletsJour($date)
+    {
+
+        $date = new \dateTime($date);
+
+        $result = $this
+            ->createQueryBuilder('a')
+            ->select('COUNT(a)')
+            ->where('a.date = :date')
+            ->setParameter('date', $date)
+            ->getQuery()
+            ->getSingleScalarResult();
+        if (!$result) {
+            return 0;
+        }
+        return $result;
+        
+
+    }
+
 }

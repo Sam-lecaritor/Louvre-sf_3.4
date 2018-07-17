@@ -40,6 +40,9 @@ class DefaultController extends Controller
 //todo => ajouter la suppression de l'option billet dans la bdd
 
         $session = $request->getSession();
+        $id = $session->get('option')->getIdClient();
+        $this->deleteOption($id);
+
         $session->set('option', null);
         $session->set('commande', null);
         $step = 1;
@@ -66,7 +69,9 @@ $datepick = $datepickObject->getConfig();  */
         $message_info = null;
         $message_success = null;
         $message_failed = null;
+        $calculService = new Calcul($em);
 
+        $this->checkOptions($session);
 
         if (null === ($session->get('option'))) {
 
@@ -79,9 +84,19 @@ $datepick = $datepickObject->getConfig();  */
                 $form->handleRequest($request);
 
                 if ($form->isSubmitted() && $form->isValid()) {
-                    $session->set('option', $billetsOption);
-                    $em->persist($billetsOption);
-                    $em->flush();
+                    $dateChoisie = $billetsOption->getDate()->format('Y-m-d');
+                    $placesReste = $calculService->calculBilletsRestants($dateChoisie);
+
+                    if ($placesReste > 0) {
+                        $message_alert = null;
+                        $session->set('option', $billetsOption);
+                        $em->persist($billetsOption);
+                        $em->flush();
+
+                    } else {
+                        $message_alert = "Plus assez de places disponibles pour cette date ({$dateChoisie}), veuillez en choisir une autre";
+
+                    }
                 }
             }
         }
@@ -111,14 +126,15 @@ $datepick = $datepickObject->getConfig();  */
                     if ($this->verifCommande($nombreBillets, $billetsForm) === null) {
 
                         $listeBillets = $collection->getBillets();
-                        $CalculService = new Calcul;
+                        $CalculService = new Calcul($em);
 
                         foreach ($listeBillets as $ticket) {
 
                             ($ticket->getTarif() ? 0 : 1);
                             $prixUnitaire = $CalculService->calculPrixBillet($ticket->getDateNaissance(), $ticket->getDemiJournee(), $ticket->getTarif());
                             $ticket->setPrixUnitaire($prixUnitaire);
-                            /*  $ticket->setCollectionId($collection->getClientId()); */
+                            //$ticket->setCollectionId($collection->getClientId());
+                            $ticket->setDate($collection->getDate());
 
                             $collection->incrementePrixTotal($prixUnitaire);
                         }
@@ -161,6 +177,8 @@ $datepick = $datepickObject->getConfig();  */
 //todo => supprimer les billets en option en rapport a la commande
 
                         $this->sendMail($billets, $commande);
+                        $id = $session->get('option')->getIdClient();
+                        $this->deleteOption($id);
 
                         $session->set('option', null);
                         $session->set('commande', null);
@@ -195,15 +213,14 @@ $datepick = $datepickObject->getConfig();  */
      */
     public function testBilletsAction(Request $request)
     {
+        $em = $this->getDoctrine()->getManager();
+
         $dateChoisie = $request->query->get('date');
 
-        //todo => créer la methode de calcul de dates restantes
+        $calculService = new Calcul($em);
+        $placesReste = $calculService->calculBilletsRestants($dateChoisie);
 
-        $testDate = $this->getDoctrine()
-            ->getRepository('LouvreBundle:BilletsOption')
-            ->compterOptions($dateChoisie);
-
-        $response = new Response(json_encode(array('placesRestantes' => 900, 'date' => $testDate)));
+        $response = new Response(json_encode(array('placesRestantes' => $placesReste, 'date' => $placesReste)));
         $response->headers->set('Content-Type', 'application/json');
         return $response;
     }
@@ -254,6 +271,61 @@ $datepick = $datepickObject->getConfig();  */
 
         $this->get('mailer')->send($message);
 
+    }
+
+/**
+ * supprime une option par l'id client
+ */
+
+    public function deleteOption($id)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $result = $em->getRepository('LouvreBundle:BilletsOption')->findOptionByIdClient($id);
+        if ($result) {
+            $em->remove($result);
+            $em->flush();
+
+        }
+
+    }
+
+    public function checkOptions($session)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $calculService = new Calcul($em);
+        $id_client = null;
+        $oldOptions = $em
+            ->getRepository('LouvreBundle:BilletsOption')
+            ->findOptionsByExpiration($calculService->dureeValiditeeOption());
+
+        if (null !== ($session->get('option'))) {
+            $id_client = $session->get('option')->getIdClient();
+        }
+
+        if ($oldOptions !== null && $id_client !== null) {
+            foreach ($oldOptions as $oldOption) {
+                foreach ($oldOption as $key => $value) {
+
+                    if ($value === $id_client) {
+                        var_dump($key);
+
+                        var_dump($value);
+
+                        $this->deleteOption($id_client);
+
+                        $session->set('option', null);
+                        $session->set('commande', null);
+                        $step = 1;
+
+                    } else {
+                        $this->deleteOption($value);
+
+                    }
+
+                }
+            }
+        }
     }
 
 //liste des methodes de arraycollection

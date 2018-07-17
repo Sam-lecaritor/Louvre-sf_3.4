@@ -22,6 +22,13 @@ class Billet
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
+    
+    /**
+     * @var \Date
+     *
+     * @ORM\Column(name="date", type="date")
+     */
+    private $date;
 
 
     /**

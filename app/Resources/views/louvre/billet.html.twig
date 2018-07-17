@@ -55,7 +55,17 @@
             </div>
         {% endif %}
         {% if step == 1 %}
+            {% if message_alert %}
 
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+
+                    {{ message_alert }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+            {% endif %}
             <div class="container" id="step1">
 
                 <h1>Étape 1

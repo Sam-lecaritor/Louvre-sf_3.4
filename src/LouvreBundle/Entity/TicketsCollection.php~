@@ -26,7 +26,7 @@ class TicketsCollection
     /**
      * @var string
      *
-     * @ORM\Column(name="client_id", type="string", length=255)
+     * @ORM\Column(name="clientId", type="string", length=255)
      */
     private $clientId;
 
