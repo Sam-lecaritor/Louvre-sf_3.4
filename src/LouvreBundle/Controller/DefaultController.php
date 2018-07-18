@@ -69,13 +69,16 @@ $datepick = $datepickObject->getConfig();  */
         $message_info = null;
         $message_success = null;
         $message_failed = null;
+        $datepickConf =[];
         $calculService = new Calcul($em);
 
         $this->checkOptions($session);
 
+
         if (null === ($session->get('option'))) {
 
             $step = 1;
+            $datepickConf =$this->initialiseDatePicker();
 
             $form = $this->get('form.factory')->create(BilletsOptionType::class, $billetsOption);
             $formulaire = $form->createView();
@@ -201,6 +204,7 @@ $datepick = $datepickObject->getConfig();  */
             'message_info' => $message_info,
             'message_success' => $message_success,
             'message_failed' => $message_failed,
+            'datepickConf' =>$datepickConf
         ]);
 
     }
@@ -308,10 +312,6 @@ $datepick = $datepickObject->getConfig();  */
                 foreach ($oldOption as $key => $value) {
 
                     if ($value === $id_client) {
-                        var_dump($key);
-
-                        var_dump($value);
-
                         $this->deleteOption($id_client);
 
                         $session->set('option', null);
@@ -328,20 +328,38 @@ $datepick = $datepickObject->getConfig();  */
         }
     }
 
-//liste des methodes de arraycollection
-    //https:www.doctrine-project.org/api/collections/latest/Doctrine/Common/Collections/ArrayCollection.html
-    /*
-    echo "<div class='debug'>";
-    echo "TOKEN STRIPE ===>";
-    var_dump($token);
-    echo "</br>";
-    echo "</div>";
-     */
+    public function initialiseDatePicker()
+    {
+        $em = $this->getDoctrine()->getManager();
+        $result = $em->getRepository('LouvreBundle:Billet')->countByDate();
+        $datePicktable = [];
+        if (null !== $result) {
+            foreach ($result as $key => $value) {
 
-//4242 4242 4242 4242 test@mail.com 12 / 19 123 86000
-    //4242 4242 4242 4242
+                if (intval($value["nombre"]) >= 1000) {
+                    $dateFormate = substr($value["date"], 8, 2) . '/' . substr($value["date"], 5, 2) . '/' . substr($value["date"], 0, 4);
+                    $datePicktable[] = $dateFormate;
+                }
+            }
+        }
+        return  implode(',',$datePicktable);
+
+    }
 
 }
+
+//liste des methodes de arraycollection
+//https:www.doctrine-project.org/api/collections/latest/Doctrine/Common/Collections/ArrayCollection.html
+/*
+echo "<div class='debug'>";
+echo "TOKEN STRIPE ===>";
+var_dump($token);
+echo "</br>";
+echo "</div>";
+ */
+
+//4242 4242 4242 4242 test@mail.com 12 / 19 123 86000
+//4242 4242 4242 4242
 
 /* CHARGE ===>
 object(Stripe\ApiResponse)#935 (4)

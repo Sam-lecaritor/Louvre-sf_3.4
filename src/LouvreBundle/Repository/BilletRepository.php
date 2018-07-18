@@ -33,8 +33,27 @@ class BilletRepository extends \Doctrine\ORM\EntityRepository
             return 0;
         }
         return $result;
-        
+
+    }
+
+    public function countByDate()
+    {
+        $result = $this
+            ->createQueryBuilder('a')
+            ->select('a.date', 'COUNT(a) as nombre')
+            ->groupBy('a.date')
+            ->getQuery()
+            ->getScalarResult();
+
+        if (!$result) {
+            return null;
+        }
+        return $result;
 
     }
 
 }
+
+/* SELECT prenom, COUNT(*) AS nbpre
+FROM tablemembres
+GROUP BY prenom; */
