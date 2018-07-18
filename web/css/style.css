@@ -168,6 +168,11 @@ p {
     color: rgb(255, 255, 255);
     background-color: rgba(105, 99, 99, 0.932);
 }
+.collection-remove{
+    background-color: #d9534f;
+    padding:0;
+    font-size: 12px;
+}
 
 a:focus {
     color: rgb(255, 255, 255);
@@ -196,14 +201,12 @@ a:focus {
     border-color: white;
 }
 
-.alertinfo{
+.alertinfo {
     font-size: 1.3em;
     background-color: rgba(0, 0, 0, 0.295);
     border-color: white;
     border-radius: 4px;
 }
-
-
 
 @media screen and (max-width: 640px) {
     .content {
@@ -213,6 +216,18 @@ a:focus {
     }
 }
 
+#louvrebundle_billetsoption_valider {
+    margin-left: 15px;
+}
+.form-control{
+    margin-top:8px;
+}
+.input-pays > label{
+    margin:0;
+}
+.btn-text > p{
+    text-align: left;
+}
 .debug {
     background-color: aliceblue;
     color: black;

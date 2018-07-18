@@ -34,5 +34,5 @@ services:
     #     arguments:
     #         $someArgument: 'some_value'
     # add more services, or override services that need manual wiring
-    LouvreBundle\Service\Calcul:
-        arguments: ["@doctrine.orm.entity_manager"]
+    LouvreBundle\Services\Calcul:
+        arguments: ["@doctrine.orm.default_entity_manager"]

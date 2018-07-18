@@ -98,4 +98,8 @@ class Calcul
         return 1000 - ($testdateBillets + $testDateOptions);
     }
 
+    public function double($int){
+        return $int*2;
+    }
+
 }

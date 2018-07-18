@@ -42,7 +42,7 @@ class BilletsOptionType extends AbstractType
             ))
             ->add('valider', SubmitType::class, array(
                 'attr' => [
-                    'class' => 'btn-success',
+                    'class' => 'btn-success margin-top-half',
                 ],
             ));
 

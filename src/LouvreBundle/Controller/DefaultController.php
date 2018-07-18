@@ -14,6 +14,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\ORM\EntityManager;
+
 
 //todo => gerer la validation des formulaires
 //todo=> gerer les erreurs de stripe
@@ -70,7 +72,7 @@ $datepick = $datepickObject->getConfig();  */
         $message_success = null;
         $message_failed = null;
         $datepickConf =[];
-        $calculService = new Calcul($em);
+        $calculService = $this->get('calcul');
 
         $this->checkOptions($session);
 
@@ -129,7 +131,7 @@ $datepick = $datepickObject->getConfig();  */
                     if ($this->verifCommande($nombreBillets, $billetsForm) === null) {
 
                         $listeBillets = $collection->getBillets();
-                        $CalculService = new Calcul($em);
+                        $CalculService = $this->get('calcul');
 
                         foreach ($listeBillets as $ticket) {
 
@@ -221,7 +223,8 @@ $datepick = $datepickObject->getConfig();  */
 
         $dateChoisie = $request->query->get('date');
 
-        $calculService = new Calcul($em);
+        $calculService = $this->get('calcul');
+
         $placesReste = $calculService->calculBilletsRestants($dateChoisie);
 
         $response = new Response(json_encode(array('placesRestantes' => $placesReste, 'date' => $placesReste)));
@@ -297,7 +300,7 @@ $datepick = $datepickObject->getConfig();  */
     public function checkOptions($session)
     {
         $em = $this->getDoctrine()->getManager();
-        $calculService = new Calcul($em);
+        $calculService = $this->get('calcul');
         $id_client = null;
         $oldOptions = $em
             ->getRepository('LouvreBundle:BilletsOption')
