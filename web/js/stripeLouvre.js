@@ -3,7 +3,6 @@ $(document).ready(function () {
     var elements = stripe.elements();
     var style = {
         base: {
-            // Add your base input styles here. For example:
             fontSize: '16px',
             color: "#32325d"
         }
@@ -48,7 +47,7 @@ $(document).ready(function () {
         hiddenInput.setAttribute('name', 'stripeToken');
         hiddenInput.setAttribute('value', token.id);
         form.appendChild(hiddenInput);
-        console.log(token.id + "*************** TOKENNNNN ******************");
+
         // Submit the form
         form.submit();
     }

@@ -56,9 +56,6 @@ var nextYear = (date.getFullYear() + 1).toString();
 var todayString = date.ddmmyyyy(0).toString();
 var nextYearString = date.ddmmyyyy(1).toString();
 
-console.log(todayString);
-console.log(nextYearString);
-
 
 
 $(document).ready(function () {
@@ -90,7 +87,6 @@ $(document).ready(function () {
     $('.datepicker').datepicker(options);
 
     $('#louvrebundle_billetsoption_nombre').change(function (value) {
-        //console.log($('#louvrebundle_billetsoption_nombre').val());
 
         $('#nbrTicket').text($('#louvrebundle_billetsoption_nombre').val());
     });
@@ -98,21 +94,19 @@ $(document).ready(function () {
 
         var chooseDate = $('.datepicker').datepicker('getDate');
 
-        //console.log('valueeeeeeeeee ****** ' + $('.datepicker').val());
+
 
         chooseDate = (chooseDate.getFullYear() + "-" + (
             (chooseDate.getMonth() + 1) > 9 ? (chooseDate.getMonth() + 1) : ("0" + (
                 chooseDate.getMonth() + 1))) + "-" + (
             chooseDate.getDate() > 9 ? chooseDate.getDate() : "0" + chooseDate.getDate()));
 
-        //console.log(typeof (chooseDate) + " ==> date " + chooseDate);
+   
 
         $.get("/testbillets", {
             date: chooseDate
         }, function (data, status) {
-            //console.log("Data: " + data.placesRestantes + "\nStatus: " + status);
-            //console.log("date choisie: " + chooseDate + " valeur " + data.date);
-            //$('#places-rest').toggleClass('hidden-alert', false);
+
             $('#places-rest').fadeIn(100, "linear", function () {
                 $('#places-rest').text('Places disponibles pour cette date: ' + data.placesRestantes);
 

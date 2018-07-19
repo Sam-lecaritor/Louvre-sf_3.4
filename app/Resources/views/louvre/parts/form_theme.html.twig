@@ -23,7 +23,7 @@
             <table {{ block('widget_attributes') }}>
                 <thead>
                     <th>Noms, Prénoms</th>
-                    <th>Pays, Age</th>
+                    <th>Pays, Ages</th>
                 </thead>
                 <tbody>
 
@@ -56,7 +56,7 @@
                 {{form_label(form.prenom )}}
                 {{ form_widget(form.prenom, {'attr': {'autocomplete':'off', 'required':'required'}}) }}
             </div>
-            <div class='row'>
+            <div class='row input-check-tarif'>
                 <div class='col-sm-6 margin-top input-inline'>
                     {{ form_widget(form.demiJournee) }}
                 </div>
@@ -76,7 +76,7 @@
                 {{form_label(form.pays)}}
                 {{ form_widget(form.pays, {'attr': {'autocomplete':'off', 'required':'required'}}) }}
             </div>
-            <div class='row'>
+            <div class='row suppr-billet'>
 
                 <div class='col-sm-6 btn-text '>
                     <p>Supprimer le billet</p>

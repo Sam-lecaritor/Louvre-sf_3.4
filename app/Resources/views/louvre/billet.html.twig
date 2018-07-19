@@ -8,26 +8,10 @@
 
 {% block body %}
 
-    <div class="text-center margin-top margin-bottom menu">
-
-        <a href="/">
-            <button type="button" class="btn btn-secondary">
-                <i class="fa fa-info-circle"></i>
-                Infos tarifs
-            </button>
-
-        </a>
-        <a href="/billets">
-
-            <button type="button" class="btn btn-secondary">
-                <i class="fa fa-cart-arrow-down"></i>
-                Billeterie
-            </button>
-        </a>
-
-    </div>
+    {% include 'louvre/parts/nav.html.twig'%}
 
     <div class="content">
+
         {% if message_success == null and step != 1 %}
             {% if message_alert %}
 
@@ -38,108 +22,84 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-
             {% endif %}
 
             {% if message_info %}
                 <div class="alert alert-light text-center alertinfo" role="alert">
-
                     {{ message_info }}
-
                 </div>
-
             {% endif %}
 
             <div class="annulation text-center">
                 <a class="btn btn-danger" href="/annulation" role="button">Annuler commande</a>
             </div>
         {% endif %}
+
         {% if step == 1 %}
             {% if message_alert %}
-
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
-
                     {{ message_alert }}
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-
             {% endif %}
-            <div class="container" id="step1">
 
+            <div class="container" id="step1">
                 <h1>Étape 1
                 </h1>
-
-                <h2 class="text-center">Reservez le nombre de billets souhaités</h2>
+                <h2 class="text-center">Réservez le nombre de billets souhaités</h2>
+                <p class="text-center">
+                   Les billets seront envoyés sur l'adresse mail que vous allez renseigner.
+                </p>
                 <div class="well">
                     {{ form_start(form, {'attr': {'class': 'form-horizontal'}}) }}
-
-                    {# Les erreurs générales du formulaire. #}
                     {{ form_errors(form) }}
                     <div class="form-group">
                         {{ form_errors(form.nombre) }}
                         <i class="fa fa-minus-square" onclick="decrementeRange()"></i>
-
                         {{ form_widget(form.nombre, {'attr': {'class': 'form-control-range'}}) }}
-
                         <i class="fa fa-plus-square" onclick="incrementeRange()"></i>
                         <span id="nbrTicket">1</span>
-
                     </div>
 
                     <div class="form-inline">
-
                         {{ form_errors(form.date) }}
                         {{ form_errors(form.mail) }}
-
                         <div class="col-sm-6">
-
                             {{ form_widget(form.date) }}
                         </div>
-                        <div class="col-sm-6">
 
+                        <div class="col-sm-6">
                             {{ form_widget(form.mail) }}
                         </div>
                     </div>
-
                     {{ form_rest(form) }}
                     {{ form_end(form) }}
                 </div>
-
                 <div id="places-rest" class="alert hidden" role="alert"></div>
             </br>
-
         </div>
-
         <div id="js-date-conf" data-date-conf="{{ datepickConf}}"></div>
-        <!-- ... -->
     </div>
-
 {% endif %}
 
 {% if step == 2 %}
     <h1>
         Étape 2
     </h1>
-
     {% form_theme form 'louvre/parts/form_theme.html.twig' %}
-
     {{ form(form) }}{% endif %}
 
     {% if step == 3 %}
-
         {% if message_success == null %}
-
             {% if message_failed != null %}
 
                 <div class="alert text-center">
                     <h1 class="display-4">Paiement non validé</h1>
                     <p class="lead">Le paiement de votre achat n'a pas été validé suite a une erreur.</p>
                     <p>Veuillez vérifier vos informations bancaires.</p>
-
                 </div>
-
             {% endif %}
 
             <h1>
@@ -148,7 +108,6 @@
             <h2>paiement carte bancaire</h2>
 
             <div class="stripe">
-
                 <form action="/billets" method="post" id="payment-form">
                     <div class="form-row">
                         <label for="card-element">
@@ -157,14 +116,11 @@
                         <div id="card-element">
                             <!-- A Stripe Element will be inserted here. -->
                         </div>
-
                         <!-- Used to display Element errors. -->
                         <div id="card-errors" role="alert"></div>
                     </div>
-
                     <button class="btn btn-success margin-top-half">Valider achat</button>
                 </form>
-
             </div>
         {% endif %}
 
@@ -174,12 +130,9 @@
                 <h1 class="display-4">Félicitation!</h1>
                 <p class="lead">Le paiement de votre achat a été validé</p>
                 <p>Vous allez recevoir vos billets sur votre boite mail.</p>
-
             </div>
-
         {% endif %}
     {% endif %}
-
 </div>
 
 {% block javascripts %}
@@ -193,7 +146,7 @@
         <script src="{{ asset('js/collection.js') }}"></script>
     {% endif %}
 
-    {% if step == 3 %}
+    {% if step == 3 and message_success == null%}
         <script src="{{ asset('js/stripeLouvre.js') }}"></script>
     {% endif %}
 

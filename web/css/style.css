@@ -105,15 +105,21 @@ p {
 }
 
 #nbrTicket {
-    float: right;
     font-size: 1.5em;
     color: black;
     background-color: white;
     min-width: 40px;
     text-align: center;
     border-radius: 4px;
+    display: inline-block;
+    margin-left: 20px;
 }
-
+#louvrebundle_billetsoption_mail,
+#louvrebundle_billetsoption_date {
+    width: 200px;
+    height: 35px;
+    text-align: center;
+}
 .fa-minus-square,
 .fa-plus-square {
     position: relative;
@@ -129,12 +135,20 @@ p {
     color: black;
     border-radius: 4px;
     text-align: left;
+
+}
+.input-check-tarif{
+    font-size: 0.9em;
 }
 
 .form-check-input {
-    width: 20px;
-    height: 20px;
-    margin-left: -25px
+    position :relative;
+    width: 18px;
+    height: 18px;
+    margin-left: 25px;
+    word-wrap: none;
+    max-width: 200px;
+    
 }
 
 .list-group,
@@ -227,6 +241,12 @@ a:focus {
 }
 .btn-text > p{
     text-align: left;
+    font-size: 0.9em;
+    margin-left: 18px;
+}
+
+.louvrebundle_ticketscollection_save{
+    margin-bottom: 100px;
 }
 .debug {
     background-color: aliceblue;

@@ -31,7 +31,7 @@ class BilletsOptionType extends AbstractType
                 'attr' => [
                     'class' => 'datepicker',
                     'autocomplete' => "off",
-                    'placeholder' => 'date de la visite',
+                    'placeholder' => 'Date de la visite',
                 ],
                 'format' => "dd-MM-yyyy",
             ))
@@ -40,7 +40,7 @@ class BilletsOptionType extends AbstractType
                     'placeholder' => 'Votre mail',
                 ],
             ))
-            ->add('valider', SubmitType::class, array(
+            ->add('Valider', SubmitType::class, array(
                 'attr' => [
                     'class' => 'btn-success margin-top-half',
                 ],

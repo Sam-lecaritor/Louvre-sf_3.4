@@ -19,12 +19,15 @@ class BilletType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $today = date('Y-m-d');
         $builder
             ->add('dateNaissance', BirthdayType::class, array(
                 'widget' => 'single_text',
                                'attr' => [
                     'class' => 'mini-input',
                     'autocomplete' =>'off',
+                    'max' => $today,
+                    'value' => '1980-01-01'
                 ],
                 'required'=>true
             ))
@@ -50,7 +53,7 @@ class BilletType extends AbstractType
                 'required'=>true
             ))
             ->add('demiJournee', CheckboxType::class, array(
-                'label' => 'Demi-journée',
+                'label' => '1/2 journée',
             ))
             ->add('tarif', CheckboxType::class, array(
                 'label' => 'Tarif-reduit',
