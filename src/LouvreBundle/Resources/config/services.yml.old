@@ -1,0 +1,5 @@
+services:
+    calcul:
+        class: LouvreBundle\Services\Calcul
+        arguments: ["@doctrine.orm.default_entity_manager"]
+        public: true

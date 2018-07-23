@@ -3,17 +3,16 @@
 namespace LouvreBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\CountryType;
 use Symfony\Component\Form\Extension\Core\Type\BirthdayType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\CountryType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class BilletType extends AbstractType
 {
+
     /**
      * {@inheritdoc}
      */
@@ -23,37 +22,40 @@ class BilletType extends AbstractType
         $builder
             ->add('dateNaissance', BirthdayType::class, array(
                 'widget' => 'single_text',
-                               'attr' => [
+                'attr' => [
                     'class' => 'mini-input',
-                    'autocomplete' =>'off',
+                    'autocomplete' => 'off',
                     'max' => $today,
-                    'value' => '1980-01-01'
+                    'value' => '1980-01-01',
                 ],
-                'required'=>true
+                'required' => true,
             ))
             /* ->add('uniqueId') */
-            ->add('nom',TextType::class, array(
+            ->add('nom', TextType::class, array(
                 'attr' => [
                     'class' => 'mini-input',
-                    'autocomplete' =>'off',
+                    'autocomplete' => 'off',
                 ],
                 'label' => 'Nom',
-                'required'=>true
+                'required' => true,
             ))
-            ->add('prenom',TextType::class, array(
+            ->add('prenom', TextType::class, array(
                 'attr' => [
                     'class' => 'mini-input',
-                    'autocomplete' =>'off',
+                    'autocomplete' => 'off',
                 ],
                 'label' => 'Prénom',
-                'required'=>true
+                'required' => true,
             ))
             ->add('pays', CountryType::class, array(
                 'preferred_choices' => array('FR', 'GB', 'DE', 'ES', 'IT'),
-                'required'=>true
+                'required' => true,
             ))
             ->add('demiJournee', CheckboxType::class, array(
                 'label' => '1/2 journée',
+                'attr' => [
+                    'class' =>'demiJourInput'
+                ]
             ))
             ->add('tarif', CheckboxType::class, array(
                 'label' => 'Tarif-reduit',

@@ -59,6 +59,16 @@
             <div class='row input-check-tarif'>
                 <div class='col-sm-6 margin-top input-inline'>
                     {{ form_widget(form.demiJournee) }}
+
+                    {#                     {% if demiJourObligatoire %}
+
+                        {{ form_widget(form.demiJournee, {'attr': { 'checked' : 'checked' , 'disabled' : 'disabled'}}) }}
+                    {% endif %}
+                    {% if demiJourObligatoire == false %}
+
+                        
+                    {% endif %} #}
+
                 </div>
                 <div class='col-sm-6 margin-top input-inline'>
                     {{ form_widget(form.tarif) }}
@@ -72,16 +82,16 @@
                 {{form_label(form.dateNaissance)}}
                 {{ form_widget(form.dateNaissance, {'attr': {'autocomplete':'off', 'required':'required'}}) }}
             </div>
-<div class='col-sm-12 input-pays'>
+            <div class='col-sm-12 input-pays'>
                 {{form_label(form.pays)}}
                 {{ form_widget(form.pays, {'attr': {'autocomplete':'off', 'required':'required'}}) }}
             </div>
             <div class='row suppr-billet'>
 
-                <div class='col-sm-6 btn-text '>
+                <div class='col-sm-9 col-xs-9 btn-text '>
                     <p>Supprimer le billet</p>
                 </div>
-                <div class='col-sm-6 margin-top-half'>
+                <div class='col-sm-3 col-xs-3 margin-top-half text-right btn-suppr-min'>
                     <a href="#" class="collection-remove btn btn-default btnTickets" title="Delete element">
                         <i class="fa fa-minus-square" style="font-size:20px;color:white; "></i>
                     </a>

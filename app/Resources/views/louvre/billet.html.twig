@@ -50,7 +50,7 @@
                 </h1>
                 <h2 class="text-center">Réservez le nombre de billets souhaités</h2>
                 <p class="text-center">
-                   Les billets seront envoyés sur l'adresse mail que vous allez renseigner.
+                    Les billets seront envoyés sur l'adresse mail que vous allez renseigner.
                 </p>
                 <div class="well">
                     {{ form_start(form, {'attr': {'class': 'form-horizontal'}}) }}
@@ -88,6 +88,10 @@
     <h1>
         Étape 2
     </h1>
+
+    <div id="js-demijour-conf" data-demijour-conf="{{ demiJourObligatoire}}"></div>
+    <div id="js-nbrOptions-conf" data-nbroptions-conf="{{ nbrOptions}}"></div>
+
     {% form_theme form 'louvre/parts/form_theme.html.twig' %}
     {{ form(form) }}{% endif %}
 
@@ -122,12 +126,29 @@
                     <button class="btn btn-success margin-top-half">Valider achat</button>
                 </form>
             </div>
-        {% endif %}
 
+            <h3 class="margin-top text-left">Récapitulatif des billets commadés :
+            </h3>
+            <ul class="margin-top">
+
+                {% for billet in billetsListeFinale %}
+                    <li class="margin-top-half">
+                        {{billet.nom}}
+                        {{billet.prenom}},
+                        {{billet.dateNaissance|date("d-M-Y")}}, &nbsp;&nbsp;
+                        <u>Prix</u>
+                        :
+                        {{billet.prixUnitaire}}€
+
+                    </li>
+                {% endfor %}
+
+            {% endif %}
+        </ul>
         {% if message_success != null %}
 
             <div class="alert text-center">
-                <h1 class="display-4">Félicitation!</h1>
+                <h1 class="display-4">Félicitations!</h1>
                 <p class="lead">Le paiement de votre achat a été validé</p>
                 <p>Vous allez recevoir vos billets sur votre boite mail.</p>
             </div>

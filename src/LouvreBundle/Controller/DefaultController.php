@@ -14,7 +14,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-
 class DefaultController extends Controller
 {
     /**
@@ -53,7 +52,6 @@ class DefaultController extends Controller
     public function billetsAction(Request $request)
     {
 
-
         $session = $request->getSession();
         $em = $this->getDoctrine()->getManager();
         $billetsOption = new BilletsOption();
@@ -63,6 +61,9 @@ class DefaultController extends Controller
         $message_info = null;
         $message_success = null;
         $message_failed = null;
+        $billetsListeFinale= null;
+        $demiJourObligatoire=null;
+        $nbrOptions=null;
         $datepickConf = [];
         $calculService = $this->get('calcul');
 
@@ -104,8 +105,11 @@ class DefaultController extends Controller
             $collection->setClientMail($session->get('option')->getMail());
             $collection->setDate($session->get('option')->getDate());
             $collection->setConfirmed(false);
+            $nbrOptions = $session->get('option')->getNombre();
             $message_info =
-            'Vous avez réservé ' . $session->get('option')->getNombre() . ($session->get('option')->getNombre() > 1 ? " billets " : " billet ") . 'pour cette adresse mail : ' . $session->get('option')->getMail();
+            'Vous avez réservé ' . $session->get('option')->getNombre() . ($session->get('option')->getNombre() > 1 ? " billets " : " billet ") . 'pour cette adresse mail : ' . $session->get('option')->getMail(). ' pour le ' . $session->get('option')->getDate()->format('d-M-Y') ;
+            $demiJourObligatoire = $calculService->calculDemiJourObligatoire($session->get('option')->getDate());
+            $session->set('demiJour', $demiJourObligatoire);
 
             $form = $this->get('form.factory')->create(TicketsCollectionType::class, $collection);
             $formulaire = $form->createView();
@@ -127,7 +131,8 @@ class DefaultController extends Controller
 
                         foreach ($listeBillets as $ticket) {
 
-                            ($ticket->getTarif() ? 0 : 1);
+                            //($ticket->getTarif() ? 0 : 1);
+                            ($demiJourObligatoire ? $ticket->setDemiJournee(1): $ticket->setDemiJournee(0));
                             $prixUnitaire = $CalculService->calculPrixBillet($ticket->getDateNaissance(), $ticket->getDemiJournee(), $ticket->getTarif());
                             $ticket->setPrixUnitaire($prixUnitaire);
                             //$ticket->setCollectionId($collection->getClientId());
@@ -153,7 +158,10 @@ class DefaultController extends Controller
             $prixTotal = $session->get('commande')->getPrixTotal();
             $commande = $session->get('commande');
             $billets = $session->get('commande')->getBillets();
-            $message_info = 'Vous avez commandé ' . $billets->count().  ( $billets->count() > 1 ? " billets " : " billet ") . 'pour un prix total de : ' . $prixTotal . '€';
+            $billetsListeFinale=$billets;
+            $message_info = 'Vous avez commandé ' . $billets->count() . ($billets->count() > 1 ? " billets " : " billet ") . 'pour un prix total de : ' . $prixTotal . '€'. ' date de visite : ' . $session->get('option')->getDate()->format('d-M-Y');
+           $demiJourObligatoire= $session->get('demiJour');
+
 
             if ($request->isMethod('POST')) {
 
@@ -186,17 +194,19 @@ class DefaultController extends Controller
         return $this->render('louvre/billet.html.twig', [
             'form' => $formulaire,
             'step' => $step,
-            'messages' => array('test', 'retest'),
+            'demiJourObligatoire' => $demiJourObligatoire,
+            'billetsListeFinale' => $billetsListeFinale,
             'message_alert' => $message_alert,
             'message_info' => $message_info,
             'message_success' => $message_success,
             'message_failed' => $message_failed,
             'datepickConf' => $datepickConf,
+            'nbrOptions' => $nbrOptions
         ]);
     }
 
     /**
-     * Lists all billet
+     * Retourne le nombre de billets restants pour la date clické sur le calendrier
      *
      * @Route("/testbillets", name="test_billet")
      * @Method("GET")
@@ -207,6 +217,7 @@ class DefaultController extends Controller
         $dateChoisie = $request->query->get('date');
         $calculService = $this->get('calcul');
         $placesReste = $calculService->calculBilletsRestants($dateChoisie);
+
         $response = new Response(json_encode(array('placesRestantes' => $placesReste, 'date' => $placesReste)));
         $response->headers->set('Content-Type', 'application/json');
         return $response;
@@ -317,4 +328,3 @@ class DefaultController extends Controller
         return implode(',', $datePicktable);
     }
 }
-

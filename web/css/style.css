@@ -1,6 +1,8 @@
 body {
     background-color: rgba(0, 0, 0, 0.938);
-    background-image: url('../images/louvre_nuit.jpg');
+    background: url('../images/louvre_nuit2.jpg') no-repeat center fixed;
+    -webkit-background-size: cover;
+    background-size: cover;
     background-repeat: no-repeat;
     background-position: top;
     color: white;
@@ -114,12 +116,14 @@ p {
     display: inline-block;
     margin-left: 20px;
 }
+
 #louvrebundle_billetsoption_mail,
 #louvrebundle_billetsoption_date {
     width: 200px;
     height: 35px;
     text-align: center;
 }
+
 .fa-minus-square,
 .fa-plus-square {
     position: relative;
@@ -135,20 +139,19 @@ p {
     color: black;
     border-radius: 4px;
     text-align: left;
-
 }
-.input-check-tarif{
+
+.input-check-tarif {
     font-size: 0.9em;
 }
 
 .form-check-input {
-    position :relative;
+    position: relative;
     width: 18px;
     height: 18px;
     margin-left: 25px;
     word-wrap: none;
     max-width: 200px;
-    
 }
 
 .list-group,
@@ -182,9 +185,10 @@ p {
     color: rgb(255, 255, 255);
     background-color: rgba(105, 99, 99, 0.932);
 }
-.collection-remove{
+
+.collection-remove {
     background-color: #d9534f;
-    padding:0;
+    padding: 0;
     font-size: 12px;
 }
 
@@ -233,21 +237,36 @@ a:focus {
 #louvrebundle_billetsoption_valider {
     margin-left: 15px;
 }
-.form-control{
-    margin-top:8px;
+
+.form-control {
+    margin-top: 8px;
 }
-.input-pays > label{
-    margin:0;
+
+.input-pays>label {
+    margin: 0;
 }
-.btn-text > p{
+
+.btn-text {
     text-align: left;
     font-size: 0.9em;
     margin-left: 18px;
+    display: inline-block;
+    max-width: 120px;
+    padding: 0;
 }
 
-.louvrebundle_ticketscollection_save{
+.btn-suppr-min {
+    max-width: 60px;
+    margin-right: 30px;
+    margin-left: auto;
+    position: relative;
+    display: inline-block;
+}
+
+.louvrebundle_ticketscollection_save {
     margin-bottom: 100px;
 }
+
 .debug {
     background-color: aliceblue;
     color: black;
@@ -276,4 +295,38 @@ a:focus {
 
 .StripeElement--webkit-autofill {
     background-color: #fefde5 !important;
+}
+
+@media screen and (max-width: 640px) {
+    .content {
+        min-width: 100%;
+        padding: 10px;
+        margin: 0;
+    }
+    td>.col-sm-12,
+    .suppr-billet {
+        padding: 0;
+    }
+    .btn-suppr-min {
+        max-width: 50px;
+        margin-right: 0;
+        padding-left: 0;
+    }
+}
+@media screen and (max-width: 450px) {
+.btn-text {
+    text-align: left;
+    font-size: 0.9em;
+    margin-left: 18px;
+    display: inline-block;
+    max-width: 100px;
+    padding: 0;
+
+}
+
+.btn-suppr-min {
+    max-width: 50px;
+    display: block;
+    padding-left: 0;
+}
 }

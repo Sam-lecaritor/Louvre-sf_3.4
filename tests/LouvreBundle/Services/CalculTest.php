@@ -32,9 +32,6 @@ class CalculTest extends KernelTestCase
 
     }
 
-    
-
-
     /**
      * {@inheritDoc}
      */

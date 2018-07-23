@@ -24,12 +24,10 @@ class Calcul
         $my_date_time = time("Y-m-d H:i:s");
 
 // ( 1h30 = 5400 secondes soit 60X60X1.5)
-        $my_new_date_time = $my_date_time - 60*60*2.5;
+        $my_new_date_time = $my_date_time - 60 * 60 * 2.5;
 
         $my_new_date = date("Y-m-d H:i:s", $my_new_date_time);
         return $my_new_date;
-
-
 
     }
 
@@ -64,14 +62,11 @@ class Calcul
             $prix = 0;
         } elseif ($age > 4 && $age < 12) {
             $prix = 8;
-        } elseif ($age > 12 && $age < 60) {
-            $prix = 16;
         } elseif ($age > 60) {
             $prix = 12;
-        }
+        } else {
+            $prix = 16;
 
-        if ($demiJour) {
-            $prix = $prix;
         }
 
         return $prix;
@@ -98,8 +93,24 @@ class Calcul
         return 1000 - ($testdateBillets + $testDateOptions);
     }
 
-    public function double($int){
-        return $int*2;
+
+    
+    public function calculDemiJourObligatoire($date)
+    {
+        $now = new \Datetime();
+        $diffAsToday = $date->diff($now)->d;
+
+        if ($diffAsToday === 0 && intval($now->format('h')) >= 14) {
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
+    public function double($int)
+    {
+        return $int * 2;
     }
 
 }
