@@ -171,7 +171,7 @@ class DefaultController extends Controller
                     $statut = $stripe->createCharge($prixTotal, $_POST["stripeToken"]);
                     $_POST["stripeToken"] = null;
 
-                    if ($statut) {
+                    if (isset($statut['paid'])) {
 
                         $message_success = true;
                         $commande->setConfirmed(1);
