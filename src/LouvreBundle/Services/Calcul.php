@@ -56,17 +56,17 @@ class Calcul
         $age = $this->calculAge($dateNaissance);
 
         $prix = 0;
-        if ($reduction === true) {
-            $prix = 10;
-        } elseif ($age < 4) {
+        if ($age < 4) {
             $prix = 0;
-        } elseif ($age > 4 && $age < 12) {
+        } elseif ($age > 4 && $age <= 11) {
             $prix = 8;
-        } elseif ($age > 60) {
+        } elseif ($age >= 60) {
             $prix = 12;
         } else {
             $prix = 16;
-
+        }
+        if ($reduction === true && $prix > 10) {
+            $prix = 10;
         }
 
         return $prix;
@@ -93,8 +93,6 @@ class Calcul
         return 1000 - ($testdateBillets + $testDateOptions);
     }
 
-
-    
     public function calculDemiJourObligatoire($date)
     {
         $now = new \Datetime();
