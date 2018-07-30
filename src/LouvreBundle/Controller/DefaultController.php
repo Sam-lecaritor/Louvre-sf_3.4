@@ -27,8 +27,6 @@ class DefaultController extends Controller
         ]);
     }
 
-
-
     /**
      * @Route("/billets")
      */
@@ -84,7 +82,8 @@ class DefaultController extends Controller
         }
 
         //etape 2 reservation du nombre de billets et renseignement des informations
-       else if (null !== ($session->get('option')) && null === ($session->get('commande'))) {
+
+        if (null !== ($session->get('option')) && null === ($session->get('commande'))) {
 
             $step = 2;
             $collection->setClientId($session->get('option')->getIdClient());
@@ -140,7 +139,8 @@ class DefaultController extends Controller
             }
         }
 // etape 3 paiement et confirmation en cas de succes ou d'echec
-       else if (null !== ($session->get('commande')) && null !== ($session->get('option'))) {
+
+        if (null !== ($session->get('commande')) && null !== ($session->get('option'))) {
             $step = 3;
             $formulaire = null;
             $prixTotal = $session->get('commande')->getPrixTotal();
@@ -211,12 +211,8 @@ class DefaultController extends Controller
     }
 
     /**
-     * verifie si le nombre de billets commandés
-     *  correspond aux billets en option
+     * Annule les commandes en option et les supprime de la bdd
      *
-     */
-
-    /**
      * @Route("/annulation")
      */
 
@@ -234,7 +230,6 @@ class DefaultController extends Controller
         return $this->redirect('/billets');
 
     }
-
 
     public function verifCommande($nombreBillets, $billetsForm)
     {

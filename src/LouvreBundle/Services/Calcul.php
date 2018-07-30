@@ -99,7 +99,8 @@ class Calcul
         $now = new \Datetime();
         $diffAsToday = $date->diff($now)->d;
 
-        if ($diffAsToday === 0 && intval($now->format('h')) >= 14) {
+
+        if ($diffAsToday === 0 && intval($now->format('H')) >= 14) {
             return true;
         } else {
             return false;
