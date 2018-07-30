@@ -27,24 +27,7 @@ class DefaultController extends Controller
         ]);
     }
 
-    /**
-     * @Route("/annulation")
-     */
 
-    public function annulationAction(Request $request)
-    {
-
-        $session = $request->getSession();
-        $id = $session->get('option')->getIdClient();
-        $this->deleteOption($id);
-
-        $session->set('option', null);
-        $session->set('commande', null);
-        $step = 1;
-
-        return $this->redirect('/billets');
-
-    }
 
     /**
      * @Route("/billets")
@@ -61,14 +44,16 @@ class DefaultController extends Controller
         $message_info = null;
         $message_success = null;
         $message_failed = null;
-        $billetsListeFinale= null;
-        $demiJourObligatoire=null;
-        $nbrOptions=null;
+        $billetsListeFinale = null;
+        $demiJourObligatoire = null;
+        $nbrOptions = null;
         $datepickConf = [];
         $calculService = $this->get('calcul');
 
+        //verification de la validité des options deja enregistrées dans la bdd, session en cours ou non
         $this->checkOptions($session);
 
+//etape 1 mise en option des billets souhaités par l'utilisateur
         if (null === ($session->get('option'))) {
 
             $step = 1;
@@ -98,7 +83,8 @@ class DefaultController extends Controller
             }
         }
 
-        if (null !== ($session->get('option')) && null === ($session->get('commande'))) {
+        //etape 2 reservation du nombre de billets et renseignement des informations
+       else if (null !== ($session->get('option')) && null === ($session->get('commande'))) {
 
             $step = 2;
             $collection->setClientId($session->get('option')->getIdClient());
@@ -107,7 +93,7 @@ class DefaultController extends Controller
             $collection->setConfirmed(false);
             $nbrOptions = $session->get('option')->getNombre();
             $message_info =
-            'Vous avez réservé ' . $session->get('option')->getNombre() . ($session->get('option')->getNombre() > 1 ? " billets " : " billet ") . 'pour cette adresse mail : ' . $session->get('option')->getMail(). ' pour le ' . $session->get('option')->getDate()->format('d-M-Y') ;
+            'Vous avez réservé ' . $session->get('option')->getNombre() . ($session->get('option')->getNombre() > 1 ? " billets " : " billet ") . 'pour cette adresse mail : ' . $session->get('option')->getMail() . ' pour le ' . $session->get('option')->getDate()->format('d-M-Y');
             $demiJourObligatoire = $calculService->calculDemiJourObligatoire($session->get('option')->getDate());
             $session->set('demiJour', $demiJourObligatoire);
 
@@ -131,11 +117,13 @@ class DefaultController extends Controller
 
                         foreach ($listeBillets as $ticket) {
 
-                            //($ticket->getTarif() ? 0 : 1);
-                            ($demiJourObligatoire ? $ticket->setDemiJournee(1): $ticket->setDemiJournee(0));
+                            if ($demiJourObligatoire) {
+                                $ticket->setDemiJournee(1);
+                            }
+
                             $prixUnitaire = $CalculService->calculPrixBillet($ticket->getDateNaissance(), $ticket->getDemiJournee(), $ticket->getTarif());
                             $ticket->setPrixUnitaire($prixUnitaire);
-                            //$ticket->setCollectionId($collection->getClientId());
+
                             $ticket->setDate($collection->getDate());
 
                             $collection->incrementePrixTotal($prixUnitaire);
@@ -151,17 +139,16 @@ class DefaultController extends Controller
                 }
             }
         }
-
-        if (null !== ($session->get('commande')) && null !== ($session->get('option'))) {
+// etape 3 paiement et confirmation en cas de succes ou d'echec
+       else if (null !== ($session->get('commande')) && null !== ($session->get('option'))) {
             $step = 3;
             $formulaire = null;
             $prixTotal = $session->get('commande')->getPrixTotal();
             $commande = $session->get('commande');
             $billets = $session->get('commande')->getBillets();
-            $billetsListeFinale=$billets;
-            $message_info = 'Vous avez commandé ' . $billets->count() . ($billets->count() > 1 ? " billets " : " billet ") . 'pour un prix total de : ' . $prixTotal . '€'. ' date de visite : ' . $session->get('option')->getDate()->format('d-M-Y');
-           $demiJourObligatoire= $session->get('demiJour');
-
+            $billetsListeFinale = $billets;
+            $message_info = 'Vous avez commandé ' . $billets->count() . ($billets->count() > 1 ? " billets " : " billet ") . 'pour un prix total de : ' . $prixTotal . '€' . ' date de visite : ' . $session->get('option')->getDate()->format('d-M-Y');
+            $demiJourObligatoire = $session->get('demiJour');
 
             if ($request->isMethod('POST')) {
 
@@ -201,7 +188,7 @@ class DefaultController extends Controller
             'message_success' => $message_success,
             'message_failed' => $message_failed,
             'datepickConf' => $datepickConf,
-            'nbrOptions' => $nbrOptions
+            'nbrOptions' => $nbrOptions,
         ]);
     }
 
@@ -228,6 +215,26 @@ class DefaultController extends Controller
      *  correspond aux billets en option
      *
      */
+
+    /**
+     * @Route("/annulation")
+     */
+
+    public function annulationAction(Request $request)
+    {
+
+        $session = $request->getSession();
+        $id = $session->get('option')->getIdClient();
+        $this->deleteOption($id);
+
+        $session->set('option', null);
+        $session->set('commande', null);
+        $step = 1;
+
+        return $this->redirect('/billets');
+
+    }
+
 
     public function verifCommande($nombreBillets, $billetsForm)
     {

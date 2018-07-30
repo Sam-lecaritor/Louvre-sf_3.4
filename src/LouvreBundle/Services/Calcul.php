@@ -24,7 +24,8 @@ class Calcul
         $my_date_time = time("Y-m-d H:i:s");
 
 // ( 1h30 = 5400 secondes soit 60X60X1.5)
-        $my_new_date_time = $my_date_time - 60 * 60 * 2.5;
+        $my_new_date_time = $my_date_time - (60 * 60 * 2.5);
+
 
         $my_new_date = date("Y-m-d H:i:s", $my_new_date_time);
         return $my_new_date;
