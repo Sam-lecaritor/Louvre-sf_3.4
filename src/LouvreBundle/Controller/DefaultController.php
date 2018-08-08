@@ -81,9 +81,9 @@ class DefaultController extends Controller
             }
         }
 
-        //etape 2 reservation du nombre de billets et renseignement des informations
+//etape 2 reservation du nombre de billets et renseignement des informations
 
-        if (null !== ($session->get('option')) && null === ($session->get('commande'))) {
+        if (null !== $session->get('option') && null === $session->get('commande')) {
 
             $step = 2;
             $collection->setClientId($session->get('option')->getIdClient());
@@ -92,7 +92,7 @@ class DefaultController extends Controller
             $collection->setConfirmed(false);
             $nbrOptions = $session->get('option')->getNombre();
             $message_info =
-            'Vous avez réservé ' . $session->get('option')->getNombre() . ($session->get('option')->getNombre() > 1 ? " billets " : " billet ") . 'pour cette adresse mail : ' . $session->get('option')->getMail() . ' pour le ' . $session->get('option')->getDate()->format('d-M-Y');
+            'Vous avez réservé ' . $session->get('option')->getNombre() . ($session->get('option')->getNombre() > 1 ? " billets " : " billet ") . 'pour cette adresse mail : ' . $session->get('option')->getMail() . ' pour le ' . $session->get('option')->getDate()->format('d-m-Y');
             $demiJourObligatoire = $calculService->calculDemiJourObligatoire($session->get('option')->getDate());
             $session->set('demiJour', $demiJourObligatoire);
 
@@ -147,7 +147,7 @@ class DefaultController extends Controller
             $commande = $session->get('commande');
             $billets = $session->get('commande')->getBillets();
             $billetsListeFinale = $billets;
-            $message_info = 'Vous avez commandé ' . $billets->count() . ($billets->count() > 1 ? " billets " : " billet ") . 'pour un prix total de : ' . $prixTotal . '€' . ' date de visite : ' . $session->get('option')->getDate()->format('d-M-Y');
+            $message_info = 'Vous avez commandé ' . $billets->count() . ($billets->count() > 1 ? " billets " : " billet ") . 'pour un prix total de : ' . $prixTotal . '€' . ' date de visite : ' . $session->get('option')->getDate()->format('d-m-Y');
             $demiJourObligatoire = $session->get('demiJour');
 
             if ($request->isMethod('POST')) {

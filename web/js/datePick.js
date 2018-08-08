@@ -19,7 +19,7 @@ $.get("../json/configDatepicker.json", function (data, status) {
     }(jQuery);
 });
 var rangeOn = true;
-
+var rangeMax = 50;
 function decrementeRange() {
 
     valeur = parseInt($('#nbrTicket').text()) - 1;
@@ -32,7 +32,7 @@ function decrementeRange() {
 
 function incrementeRange() {
     valeur = parseInt($('#nbrTicket').text()) + 1;
-    if (valeur <= 50 && rangeOn) {
+    if (valeur <= rangeMax && rangeOn) {
         document.getElementById("louvrebundle_billetsoption_nombre").stepUp(1);
         $('#nbrTicket').text(valeur);
     }
@@ -110,24 +110,30 @@ $(document).ready(function () {
             $('#places-rest').fadeIn(100, "linear", function () {
                 $('#places-rest').text('Places disponibles pour cette date: ' + data.placesRestantes);
 
-                if (data.placesRestantes < 50) {
+                if (data.placesRestantes < 50 && data.placesRestantes > 0 ) {
                     $('#places-rest').addClass("alert-danger");
                     $('#places-rest').removeClass("alert-success");
-                    $('#louvrebundle_billetsoption_valider').fadeIn(100);
+                    $('#louvrebundle_billetsoption_Valider').fadeIn(100);
+                    $('#louvrebundle_billetsoption_nombre').attr('max', data.placesRestantes);
+                    rangeMax = data.placesRestantes;
                     rangeOn = true;
                 } else if (data.placesRestantes <= 0) {
-                    $('#places-rest').addClass("alert-success");
-                    $('#places-rest').removeClass("alert-danger");
-                    $('#louvrebundle_billetsoption_valider').fadeOut(100);
+                    $('#places-rest').addClass("alert-danger");
+                    $('#places-rest').removeClass("alert-success");
+                    $('#louvrebundle_billetsoption_Valider').fadeOut(100);
+                    $('#louvrebundle_billetsoption_nombre').attr('max', 0);
+                    rangeMax = 0;
                     rangeOn = false;
                     $('#nbrTicket').text(0);
-                    $('#louvrebundle_billetsoption_nombre').attr('max', O);
+                    $('#louvrebundle_billetsoption_nombre').attr('max', 0);
                 } else {
                     $('#places-rest').addClass("alert-success");
                     $('#places-rest').removeClass("alert-danger");
-                    $('#louvrebundle_billetsoption_valider').fadeIn(100);
-                    $('#louvrebundle_billetsoption_nombre').attr('max', data.placesRestantes);
+                    $('#louvrebundle_billetsoption_Valider').fadeIn(100);
+                    $('#louvrebundle_billetsoption_nombre').attr('max', 50);
+                    rangeMax = 50;
                     rangeOn = true;
+                    
                 }
 
             });
