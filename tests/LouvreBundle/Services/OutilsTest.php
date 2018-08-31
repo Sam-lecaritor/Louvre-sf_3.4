@@ -1,7 +1,7 @@
 <?php
 namespace Tests\LouvreBundle\Services;
 
-use Louvrebundle\Services\Calcul;
+use Louvrebundle\Services\Outils;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class CalculTest extends KernelTestCase
@@ -26,9 +26,9 @@ class CalculTest extends KernelTestCase
 
     public function testDouble()
     {
-        $calcul = new Calcul($this->entityManager);
+        $Outils = new Outils($this->entityManager, 1000);
 
-        $this->assertequals(4, $calcul->double(2));
+        $this->assertequals(4, $Outils->double(2));
 
     }
 
@@ -49,9 +49,9 @@ class CalculTest extends KernelTestCase
         $demiJour = 0;
         $reduction = 0;
 
-        $calcul = new Calcul($this->entityManager);
+        $Outils = new Outils($this->entityManager,1000);
 
-        $this->assertequals(0, $calcul->calculPrixBillet($dateNaissance, $demiJour, $reduction));
+        $this->assertequals(0, $Outils->calculPrixBillet($dateNaissance, $demiJour, $reduction));
 
     }
 
@@ -66,9 +66,9 @@ class CalculTest extends KernelTestCase
         $demiJour = 0;
         $reduction = 0;
 
-        $calcul = new Calcul($this->entityManager);
+        $Outils = new Outils($this->entityManager,1000);
 
-        $this->assertequals(8, $calcul->calculPrixBillet($dateNaissance, $demiJour, $reduction));
+        $this->assertequals(8, $Outils->calculPrixBillet($dateNaissance, $demiJour, $reduction));
 
     }
 
@@ -83,9 +83,9 @@ class CalculTest extends KernelTestCase
         $demiJour = 0;
         $reduction = 0;
 
-        $calcul = new Calcul($this->entityManager);
+        $Outils = new Outils($this->entityManager,1000);
 
-        $this->assertequals(16, $calcul->calculPrixBillet($dateNaissance, $demiJour, $reduction));
+        $this->assertequals(16, $Outils->calculPrixBillet($dateNaissance, $demiJour, $reduction));
 
     }
     public function testCalculPrixBilletSenior()
@@ -99,9 +99,9 @@ class CalculTest extends KernelTestCase
         $demiJour = 0;
         $reduction = 0;
 
-        $calcul = new Calcul($this->entityManager);
+        $Outils = new Outils($this->entityManager,1000);
 
-        $this->assertequals(12, $calcul->calculPrixBillet($dateNaissance, $demiJour, $reduction));
+        $this->assertequals(12, $Outils->calculPrixBillet($dateNaissance, $demiJour, $reduction));
 
     }
     public function testCalculPrixBilletSeniorReduction()
@@ -115,9 +115,9 @@ class CalculTest extends KernelTestCase
         $demiJour = 0;
         $reduction = true;
 
-        $calcul = new Calcul($this->entityManager);
+        $Outils = new Outils($this->entityManager,1000);
 
-        $this->assertequals(10, $calcul->calculPrixBillet($dateNaissance, $demiJour, $reduction));
+        $this->assertequals(10, $Outils->calculPrixBillet($dateNaissance, $demiJour, $reduction));
 
     }
         public function testCalculPrixBilletAdultesReduction()
@@ -131,9 +131,9 @@ class CalculTest extends KernelTestCase
         $demiJour = 0;
         $reduction = true;
 
-        $calcul = new Calcul($this->entityManager);
+        $Outils = new Outils($this->entityManager,1000);
 
-        $this->assertequals(10, $calcul->calculPrixBillet($dateNaissance, $demiJour, $reduction));
+        $this->assertequals(10, $Outils->calculPrixBillet($dateNaissance, $demiJour, $reduction));
 
     }
 
@@ -148,9 +148,9 @@ class CalculTest extends KernelTestCase
         $demiJour = 0;
         $reduction = true;
 
-        $calcul = new Calcul($this->entityManager);
+        $Outils = new Outils($this->entityManager,1000);
 
-        $this->assertequals(8, $calcul->calculPrixBillet($dateNaissance, $demiJour, $reduction));
+        $this->assertequals(8, $Outils->calculPrixBillet($dateNaissance, $demiJour, $reduction));
 
     }
 

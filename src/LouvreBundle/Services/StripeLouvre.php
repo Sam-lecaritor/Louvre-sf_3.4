@@ -8,7 +8,12 @@ use Stripe\Stripe;
 class StripeLouvre
 {
 
-    private $key = "sk_test_5KsDT1yflgRbhvzGrZUEdXl1";
+    //private $key = "sk_test_5KsDT1yflgRbhvzGrZUEdXl1";
+    private $key;
+
+    public function __construct($key){
+        $this->key=$key;
+    }
 
     public function createCharge($montant, $token)
     {

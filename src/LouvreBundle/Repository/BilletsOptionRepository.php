@@ -46,7 +46,7 @@ class BilletsOptionRepository extends \Doctrine\ORM\EntityRepository
 
     }
 /**
- * Supprime uen mise en option par l'id client
+ * Supprime une mise en option par l'id client
  *
  * @param [string] $id
  * @return void
@@ -62,6 +62,13 @@ class BilletsOptionRepository extends \Doctrine\ORM\EntityRepository
         }
 
     }
+    
+/**
+ *cherche les option selon la date de peremption
+ *
+ * @param [string] $id
+ * @return void
+ */
 
     public function findOptionsByExpiration($datetime)
     {

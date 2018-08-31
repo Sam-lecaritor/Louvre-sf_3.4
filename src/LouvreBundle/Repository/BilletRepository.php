@@ -12,7 +12,7 @@ class BilletRepository extends \Doctrine\ORM\EntityRepository
 {
 
     /**
-     * compte le nombre de billets mis en options pour uen date donnée
+     * compte le nombre de billets achetés pour une date donnée
      *
      * @param date $date
      * @return int
@@ -36,6 +36,13 @@ class BilletRepository extends \Doctrine\ORM\EntityRepository
 
     }
 
+    /**
+     * compte le nombre de billets achetés pour toutes les dates
+     *
+     * @param null
+     * @return array
+     */
+
     public function countByDate()
     {
         $result = $this
@@ -53,7 +60,3 @@ class BilletRepository extends \Doctrine\ORM\EntityRepository
     }
 
 }
-
-/* SELECT prenom, COUNT(*) AS nbpre
-FROM tablemembres
-GROUP BY prenom; */

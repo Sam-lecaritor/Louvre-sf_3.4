@@ -26,7 +26,6 @@ class Calcul
 // ( 1h30 = 5400 secondes soit 60X60X1.5)
         $my_new_date_time = $my_date_time - (60 * 60 * 2.5);
 
-
         $my_new_date = date("Y-m-d H:i:s", $my_new_date_time);
         return $my_new_date;
 
@@ -73,12 +72,12 @@ class Calcul
         return $prix;
     }
 
-/**
- *
- * calcul le nombre de billets restant pour une date donnée
- * @var $date
- * @return integer
- */
+    /**
+     *
+     * calcul le nombre de billets restants pour une date donnée
+     * @var $date
+     * @return integer
+     */
 
     public function calculBilletsRestants($date)
     {
@@ -94,11 +93,17 @@ class Calcul
         return 1000 - ($testdateBillets + $testDateOptions);
     }
 
+    /**
+     *
+     * determine si l'option demi jour est obligatoire
+     * @var $date
+     * @return boolean
+     */
+
     public function calculDemiJourObligatoire($date)
     {
         $now = new \Datetime();
         $diffAsToday = $date->diff($now)->d;
-
 
         if ($diffAsToday === 0 && intval($now->format('H')) >= 14) {
             return true;
@@ -107,10 +112,19 @@ class Calcul
         }
 
     }
-
+    /**
+     * Fonction de test pour php-unit
+     *
+     * @param [type] $int
+     * @return void
+     */
     public function double($int)
     {
         return $int * 2;
     }
+
+/* public function __toString(){
+     return $this;
+ } */
 
 }

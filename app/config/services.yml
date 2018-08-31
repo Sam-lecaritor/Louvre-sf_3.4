@@ -2,6 +2,10 @@
 # https://symfony.com/doc/current/service_container.html
 parameters:
     #parameter_name: value
+    maxBilletsJour: 1000
+    datesOff: ["01-05", "01-11", "25-12"]
+    joursOff: ["Tuesday"]
+    stripeKey: 'sk_test_5KsDT1yflgRbhvzGrZUEdXl1'
 
 services:
     # default configuration for services in *this* file
@@ -28,6 +32,8 @@ services:
         resource: '../../src/LouvreBundle/Controller'
         public: true
         tags: ['controller.service_arguments']
+        #arguments:
+            #$maxBilletsJour: '%maxBilletsJour%'
 
     # add more services, or override services that need manual wiring
     # AppBundle\Service\ExampleService:
@@ -35,7 +41,26 @@ services:
     #         $someArgument: 'some_value'
     # add more services, or override services that need manual wiring
 
-    calcul:
+        
+    LouvreBundle\Services\Calcul:
         class: LouvreBundle\Services\Calcul
         arguments: ["@doctrine.orm.default_entity_manager"]
         public: true
+
+    LouvreBundle\Services\Outils:
+        class: LouvreBundle\Services\Outils
+        arguments:
+            $em: "@doctrine.orm.default_entity_manager"
+            $maxBilletsJour: '%maxBilletsJour%'
+        public: true
+
+    LouvreBundle\Services\StripeLouvre:
+        arguments:
+            $key: '%stripeKey%'
+        public: true
+
+    LouvreBundle\Handler\HandlerOptions:
+            arguments:
+                $em: "@doctrine.orm.default_entity_manager"
+                $datesOff: '%datesOff%' 
+                $joursOff: '%joursOff%'

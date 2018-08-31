@@ -3,11 +3,16 @@
 namespace LouvreBundle\Controller;
 
 use LouvreBundle\Entity\Billet;
+//use LouvreBundle\Services\Calcul;
 use LouvreBundle\Entity\BilletsOption;
 use LouvreBundle\Entity\TicketsCollection;
 use LouvreBundle\Form\BilletsOptionType;
 use LouvreBundle\Form\TicketsCollectionType;
-use LouvreBundle\Services\StripeLouvre;
+use LouvreBundle\Handler\HandlerCommandes;
+use LouvreBundle\Handler\HandlerOptions;
+use LouvreBundle\Services\Mail;
+use LouvreBundle\Services\MessagesGenerator;
+use LouvreBundle\Services\Outils;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -16,28 +21,26 @@ use Symfony\Component\HttpFoundation\Response;
 
 class DefaultController extends Controller
 {
+
     /**
      * @Route("/")
      */
     public function indexAction()
     {
-
-        return $this->render('louvre/index.html.twig', [
-            'test' => 'test',
-        ]);
+        return $this->render('louvre/index.html.twig', []);
     }
 
     /**
      * @Route("/billets")
      */
-    public function billetsAction(Request $request)
+    public function billetsAction(Request $request, Outils $outils, HandlerOptions $handlerOptions, HandlerCommandes $handlerCmd, MessagesGenerator $messagesGenerator, Mail $mail)
     {
-
         $session = $request->getSession();
         $em = $this->getDoctrine()->getManager();
-        $billetsOption = new BilletsOption();
-        $collection = new TicketsCollection();
-        $billetSimple = new Billet();
+
+/* verification de la validité des options
+deja enregistrées dans la bdd, session en cours ou non */
+        $outils->checkOptions($session);
         $message_alert = null;
         $message_info = null;
         $message_success = null;
@@ -46,138 +49,90 @@ class DefaultController extends Controller
         $demiJourObligatoire = null;
         $nbrOptions = null;
         $datepickConf = [];
-        $calculService = $this->get('calcul');
-
-        //verification de la validité des options deja enregistrées dans la bdd, session en cours ou non
-        $this->checkOptions($session);
-
-//etape 1 mise en option des billets souhaités par l'utilisateur
+/**
+ * etape 1 mise en option des billets souhaités par l'utilisateur
+ *
+ */
         if (null === ($session->get('option'))) {
 
             $step = 1;
-            $datepickConf = $this->initialiseDatePicker();
-
+            $billetsOption = new BilletsOption();
+            $datepickConf = $outils->initialiseDatePicker();
             $form = $this->get('form.factory')->create(BilletsOptionType::class, $billetsOption);
             $formulaire = $form->createView();
 
-            if ($request->isMethod('POST')) {
-                $form->handleRequest($request);
+            $form->handleRequest($request);
 
-                if ($form->isSubmitted() && $form->isValid()) {
-                    $dateChoisie = $billetsOption->getDate()->format('Y-m-d');
-                    $placesReste = $calculService->calculBilletsRestants($dateChoisie);
-
-                    if ($placesReste > 0) {
-                        $message_alert = null;
-                        $session->set('option', $billetsOption);
-                        $em->persist($billetsOption);
-                        $em->flush();
-
-                    } else {
-                        $message_alert = "Plus assez de places disponibles pour cette date ({$dateChoisie}), veuillez en choisir une autre";
-
-                    }
-                }
+            if ($form->isSubmitted() && $form->isValid()) {
+                $dateChoisie = $billetsOption->getDate()->format('Y-m-d');
+                $message_alert = $handlerOptions->optionCheck($session, $dateChoisie, $billetsOption);
             }
         }
-
-//etape 2 reservation du nombre de billets et renseignement des informations
-
+/**
+ * etape 2 reservation du nombre de billets et renseignement des informations
+ *
+ */
         if (null !== $session->get('option') && null === $session->get('commande')) {
-
             $step = 2;
-            $collection->setClientId($session->get('option')->getIdClient());
-            $collection->setClientMail($session->get('option')->getMail());
-            $collection->setDate($session->get('option')->getDate());
-            $collection->setConfirmed(false);
-            $nbrOptions = $session->get('option')->getNombre();
-            $message_info =
-            'Vous avez réservé ' . $session->get('option')->getNombre() . ($session->get('option')->getNombre() > 1 ? " billets " : " billet ") . 'pour cette adresse mail : ' . $session->get('option')->getMail() . ' pour le ' . $session->get('option')->getDate()->format('d-m-Y');
-            $demiJourObligatoire = $calculService->calculDemiJourObligatoire($session->get('option')->getDate());
+            $collection = new TicketsCollection();
+
+            $options = $session->get('option');
+            $nbrOptions = $options->getNombre();
+
+            //hydratation de l'objet collection tickets
+            $outils->hydrateCollection($collection, $options->getIdClient(), $options->getMail(), $options->getDate());
+
+            //generation du message d'information sur la commande
+            $message_info = $messagesGenerator->getInfosReservation($options->getNombre(), $options->getMail(), $options->getDate());
+
+            //parametrage de la demi journée obligatoire pour le formulaire de reservation
+            $demiJourObligatoire = $outils->calculDemiJourObligatoire($session->get('option')->getDate());
             $session->set('demiJour', $demiJourObligatoire);
 
             $form = $this->get('form.factory')->create(TicketsCollectionType::class, $collection);
             $formulaire = $form->createView();
 
-            if ($request->isMethod('POST')) {
-                $form->handleRequest($request);
+            $form->handleRequest($request);
 
-                if ($form->isSubmitted() && $form->isValid()) {
+            if ($form->isSubmitted() && $form->isValid()) {
+                //recréer les données du formulaire pour le ressoumettre en cas d'echec des verifications malgré la validation des données des entitées
+                $formulaire = $form->createView();
 
-                    $form = $this->get('form.factory')->create(TicketsCollectionType::class, $collection);
-                    $formulaire = $form->createView();
-                    $nombreBillets = $form->getData()->getBillets()->count();
-                    $billetsForm = $session->get('option')->getNombre();
-                    $message_alert = $this->verifCommande($nombreBillets, $billetsForm);
+                //verifier si le nombre de billets en options correspond au nombre commandés
+                $message_alert = $outils->verifCommande($form->getData()->getBillets()->count(), $options->getNombre());
 
-                    if ($this->verifCommande($nombreBillets, $billetsForm) === null) {
-                        $listeBillets = $collection->getBillets();
-                        $CalculService = $this->get('calcul');
-
-                        foreach ($listeBillets as $ticket) {
-
-                            if ($demiJourObligatoire) {
-                                $ticket->setDemiJournee(1);
-                            }
-
-                            $prixUnitaire = $CalculService->calculPrixBillet($ticket->getDateNaissance(), $ticket->getDemiJournee(), $ticket->getTarif());
-                            $ticket->setPrixUnitaire($prixUnitaire);
-
-                            $ticket->setDate($collection->getDate());
-
-                            $collection->incrementePrixTotal($prixUnitaire);
-                        }
-
-                        if ($collection->getPrixTotal() > 0) {
-                            $session->set('commande', $collection);
-
-                        } else {
-                            $message_alert = "Vous ne pouvez pas passer une commande de 0 €, veuillez verifier les dates de naissance indiquée.";
-                        }
-                    }
+                if ($message_alert === null) {
+                    $outils->hydrateCommande($collection, $demiJourObligatoire);
+                    //verifier que le prix de la commande est supperieur a 0 euro sinon envoyer une erreur
+                    $message_alert = $outils->checkPrixTotal($collection->getPrixTotal(), $session, $collection);
                 }
             }
         }
-// etape 3 paiement et confirmation en cas de succes ou d'echec
-
+/**
+ * etape 3 paiement et confirmation en cas de succes ou message d'erreur en cas d'echec
+ *
+ */
         if (null !== ($session->get('commande')) && null !== ($session->get('option'))) {
             $step = 3;
             $formulaire = null;
-            $prixTotal = $session->get('commande')->getPrixTotal();
             $commande = $session->get('commande');
-            $billets = $session->get('commande')->getBillets();
-            $billetsListeFinale = $billets;
-            $message_info = 'Vous avez commandé ' . $billets->count() . ($billets->count() > 1 ? " billets " : " billet ") . 'pour un prix total de : ' . $prixTotal . '€' . ' date de visite : ' . $session->get('option')->getDate()->format('d-m-Y');
-            $demiJourObligatoire = $session->get('demiJour');
+            $billetsListeFinale = $commande->getBillets();
+
+            //message d'info sur le prix total et la date de la visite avant confirmation commande
+            $message_info = $messagesGenerator->messageInfosFinal($billetsListeFinale->count(), $commande->getPrixTotal(), $session->get('option')->getDate()->format('d-m-Y'));
+            //$demiJourObligatoire = $session->get('demiJour');
 
             if ($request->isMethod('POST')) {
-
                 if (isset($_POST["stripeToken"])) {
-
-                    $stripe = new StripeLouvre();
-                    $statut = $stripe->createCharge($prixTotal, $_POST["stripeToken"]);
-                    $_POST["stripeToken"] = null;
-
-                    if (isset($statut['paid'])) {
-
+                    if ($handlerCmd->confirmPayement($_POST["stripeToken"], $commande, $session)) {
                         $message_success = true;
-                        $commande->setConfirmed(1);
-                        $em->persist($commande);
-                        $em->flush();
-                        $this->sendMail($billets, $commande);
-                        $id = $session->get('option')->getIdClient();
-                        $this->deleteOption($id);
-                        $session->set('option', null);
-                        $session->set('commande', null);
-
                     } else {
                         $message_failed = true;
-
                     }
                 }
             }
         }
-
+        //rendu de la vue avec twig
         return $this->render('louvre/billet.html.twig', [
             'form' => $formulaire,
             'step' => $step,
@@ -198,12 +153,12 @@ class DefaultController extends Controller
      * @Route("/testbillets", name="test_billet")
      * @Method("GET")
      */
-    public function testBilletsAction(Request $request)
+    public function testBilletsAction(Request $request, Outils $outils)
     {
         $em = $this->getDoctrine()->getManager();
         $dateChoisie = $request->query->get('date');
-        $calculService = $this->get('calcul');
-        $placesReste = $calculService->calculBilletsRestants($dateChoisie);
+        /* $calculService = $this->get('calcul'); */
+        $placesReste = $outils->calculBilletsRestants($dateChoisie);
 
         $response = new Response(json_encode(array('placesRestantes' => $placesReste, 'date' => $placesReste)));
         $response->headers->set('Content-Type', 'application/json');
@@ -216,12 +171,12 @@ class DefaultController extends Controller
      * @Route("/annulation")
      */
 
-    public function annulationAction(Request $request)
+    public function annulationAction(Request $request, Outils $outils)
     {
 
         $session = $request->getSession();
         $id = $session->get('option')->getIdClient();
-        $this->deleteOption($id);
+        $outils->deleteOption($id);
 
         $session->set('option', null);
         $session->set('commande', null);
@@ -231,102 +186,4 @@ class DefaultController extends Controller
 
     }
 
-    public function verifCommande($nombreBillets, $billetsForm)
-    {
-
-        if ($nombreBillets === 0) {
-            $message_alert = "Vous n'avez pas renseigné le formulaire";
-
-        } elseif ($nombreBillets < $billetsForm) {
-            $message_alert = "Le nombre de billets renseignés ( {$nombreBillets} ) est inferieur aux nombre de billets que vous avez réservé précédemment ( {$billetsForm} )";
-
-        } elseif ($nombreBillets > $billetsForm) {
-            $message_alert = "Le nombre de billets renseignés ( {$nombreBillets} ) est supperieur aux nombre de billets que vous avez réservé précédemment ( {$billetsForm} )";
-
-        } else {
-            $message_alert = null;
-        }
-        return $message_alert;
-    }
-
-    public function sendMail($billets, $commande)
-    {
-        $message = (new \Swift_Message('Musée du Louvre'));
-        $cid = $message->embed(\Swift_Image::fromPath('images/louvre-pyramid-baniere.png'));
-        $message->setFrom('send@example.com')
-            ->setTo($commande->getClientMail())
-            ->setBody(
-                $this->renderView(
-                    'louvre/Emails/confirmation.html.twig',
-                    array('billets' => $billets,
-                        'commande' => $commande,
-                        'cid' => $cid)
-                ),
-                'text/html'
-            );
-        $this->get('mailer')->send($message);
-    }
-
-/**
- * supprime une option par l'id client
- */
-
-    public function deleteOption($id)
-    {
-        $em = $this->getDoctrine()->getManager();
-        $result = $em->getRepository('LouvreBundle:BilletsOption')->findOptionByIdClient($id);
-        if ($result) {
-            $em->remove($result);
-            $em->flush();
-        }
-    }
-
-    public function checkOptions($session)
-    {
-        $em = $this->getDoctrine()->getManager();
-        $calculService = $this->get('calcul');
-        $id_client = null;
-        $oldOptions = $em
-            ->getRepository('LouvreBundle:BilletsOption')
-            ->findOptionsByExpiration($calculService->dureeValiditeeOption());
-
-        if (null !== ($session->get('option'))) {
-            $id_client = $session->get('option')->getIdClient();
-        }
-
-        if ($oldOptions !== null && $id_client !== null) {
-            foreach ($oldOptions as $oldOption) {
-                foreach ($oldOption as $key => $value) {
-
-                    if ($value === $id_client) {
-                        $this->deleteOption($id_client);
-                        $session->set('option', null);
-                        $session->set('commande', null);
-                        $step = 1;
-
-                    } else {
-                        $this->deleteOption($value);
-                    }
-
-                }
-            }
-        }
-    }
-
-    public function initialiseDatePicker()
-    {
-        $em = $this->getDoctrine()->getManager();
-        $result = $em->getRepository('LouvreBundle:Billet')->countByDate();
-        $datePicktable = [];
-        if (null !== $result) {
-            foreach ($result as $key => $value) {
-
-                if (intval($value["nombre"]) >= 1000) {
-                    $dateFormate = substr($value["date"], 8, 2) . '/' . substr($value["date"], 5, 2) . '/' . substr($value["date"], 0, 4);
-                    $datePicktable[] = $dateFormate;
-                }
-            }
-        }
-        return implode(',', $datePicktable);
-    }
 }

@@ -1,5 +1,25 @@
+parameters:
+    #parameter_name: value
+    maxBilletsJour: 1000
+    datesOff: ["01/08", "01/11", "25/12"]
+    joursOff: ["tuesday"]
+
+
 services:
-    calcul:
+    Calcul:
         class: LouvreBundle\Services\Calcul
         arguments: ["@doctrine.orm.default_entity_manager"]
         public: true
+
+    LouvreBundle\Services\Outils:
+        #class: LouvreBundle\Services\Outils
+        arguments:
+            $em: "@doctrine.orm.default_entity_manager"
+        public: true
+
+    LouvreBundle\Handler\HandlerOptions:
+            arguments:
+                #$outils: "@Outils"
+                $em: "@doctrine.orm.default_entity_manager"
+                $maxBilletsJour: 100
+                

@@ -18,8 +18,10 @@ $.get("../json/configDatepicker.json", function (data, status) {
         a.fn.datepicker.dates.fr = configDatepicker;
     }(jQuery);
 });
+
 var rangeOn = true;
 var rangeMax = 50;
+
 function decrementeRange() {
 
     valeur = parseInt($('#nbrTicket').text()) - 1;
@@ -101,7 +103,7 @@ $(document).ready(function () {
                 chooseDate.getMonth() + 1))) + "-" + (
             chooseDate.getDate() > 9 ? chooseDate.getDate() : "0" + chooseDate.getDate()));
 
-   
+
 
         $.get("/testbillets", {
             date: chooseDate
@@ -110,13 +112,15 @@ $(document).ready(function () {
             $('#places-rest').fadeIn(100, "linear", function () {
                 $('#places-rest').text('Places disponibles pour cette date: ' + data.placesRestantes);
 
-                if (data.placesRestantes < 50 && data.placesRestantes > 0 ) {
+                if (data.placesRestantes < 50 && data.placesRestantes > 0) {
+                    rangeMax = data.placesRestantes;
+                    rangeOn = true;
                     $('#places-rest').addClass("alert-danger");
                     $('#places-rest').removeClass("alert-success");
                     $('#louvrebundle_billetsoption_Valider').fadeIn(100);
-                    $('#louvrebundle_billetsoption_nombre').attr('max', data.placesRestantes);
-                    rangeMax = data.placesRestantes;
-                    rangeOn = true;
+                    $('#louvrebundle_billetsoption_nombre').attr('min', 1);
+                    $('#louvrebundle_billetsoption_nombre').attr('max', rangeMax);
+
                 } else if (data.placesRestantes <= 0) {
                     $('#places-rest').addClass("alert-danger");
                     $('#places-rest').removeClass("alert-success");
@@ -130,10 +134,11 @@ $(document).ready(function () {
                     $('#places-rest').addClass("alert-success");
                     $('#places-rest').removeClass("alert-danger");
                     $('#louvrebundle_billetsoption_Valider').fadeIn(100);
+                    $('#louvrebundle_billetsoption_nombre').attr('min', 1);
                     $('#louvrebundle_billetsoption_nombre').attr('max', 50);
                     rangeMax = 50;
                     rangeOn = true;
-                    
+
                 }
 
             });
