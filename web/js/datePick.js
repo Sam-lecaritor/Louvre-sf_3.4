@@ -85,7 +85,7 @@ $(document).ready(function () {
         datesDisabled: datesDisabled,
         endDate: nextYearString,
         startDate: todayString
-    }
+    };
     $('.datepicker').datepicker(options);
 
     $('#louvrebundle_billetsoption_nombre').change(function (value) {
@@ -120,6 +120,9 @@ $(document).ready(function () {
                     $('#louvrebundle_billetsoption_Valider').fadeIn(100);
                     $('#louvrebundle_billetsoption_nombre').attr('min', 1);
                     $('#louvrebundle_billetsoption_nombre').attr('max', rangeMax);
+                    if (rangeMax < $('#nbrTicket').text()) {
+                        $('#nbrTicket').text(rangeMax);
+                    }
 
                 } else if (data.placesRestantes <= 0) {
                     $('#places-rest').addClass("alert-danger");
@@ -129,7 +132,6 @@ $(document).ready(function () {
                     rangeMax = 0;
                     rangeOn = false;
                     $('#nbrTicket').text(0);
-                    $('#louvrebundle_billetsoption_nombre').attr('max', 0);
                 } else {
                     $('#places-rest').addClass("alert-success");
                     $('#places-rest').removeClass("alert-danger");

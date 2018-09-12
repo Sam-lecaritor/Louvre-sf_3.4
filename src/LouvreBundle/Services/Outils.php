@@ -169,8 +169,9 @@ class Outils
 
 //verifie si le prix de la commande est supperieur a 0 euro
     //retourne un message d'erreur si prix < 0
-    public function checkPrixTotal($prix, $session, $collection)
+    public function checkPrixTotal($session, $collection)
     {
+     $prix = $collection->getPrixTotal();
         $message = new MessagesGenerator();
 
         if ($prix > 0) {
@@ -284,12 +285,12 @@ class Outils
 
     }
 
-    public function hydrateCollection($collection, $idClient, $mail, $date)
+    public function hydrateCollection($collection, $options)
     {
 
-        $collection->setClientId($idClient);
-        $collection->setClientMail($mail);
-        $collection->setDate($date);
+        $collection->setClientId($options->getIdClient());
+        $collection->setClientMail($options->getMail());
+        $collection->setDate($options->getDate());
         $collection->setConfirmed(false);
 
     }

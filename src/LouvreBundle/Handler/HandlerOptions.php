@@ -17,7 +17,7 @@ class HandlerOptions
     {
         $this->em = $em;
         $this->outils = $outils;
-        $this->mesages = new MessagesGenerator();
+        $this->messages = new MessagesGenerator();
         $this->joursOff = $joursOff;
         $this->datesOff = $datesOff;
 
@@ -32,10 +32,13 @@ class HandlerOptions
 
         if (in_array($day, $this->joursOff)|| in_array($dayMonth, $this->datesOff)) {
 
-            return $this->mesages->jourOff($dateChoisie);
+            return $this->messages->jourOff($dateChoisie);
 
-        } elseif ($this->outils->calculBilletsRestants($dateChoisie) <= 0) {
-            return $this->mesages->jourFull($dateChoisie);
+        } elseif ($this->outils->calculBilletsRestants($dateChoisie) < 0) {
+            return $this->messages->jourFull($dateChoisie);
+
+        } elseif ($this->outils->calculBilletsRestants($dateChoisie) < $billetsOption->getNombre()) {
+            return $this->messages->toFewPlaces($dateChoisie);
 
         } else {
             $session->set('option', $billetsOption);

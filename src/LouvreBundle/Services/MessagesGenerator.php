@@ -27,6 +27,18 @@ class MessagesGenerator
     }
 
     /**
+     * Messages d'information sur les jours complets du musée
+     *
+     * @return string
+     */
+
+    public function toFewPlaces($dateChoisie)
+    {
+        return 'Le nombre de billets que vous avez demandé pour le (' . $dateChoisie . ') est inferrieur aux billets disponibles.';
+
+    }
+
+    /**
      * message d'info etape 2 "reservation des billets"
      *
      * @param [type] $nbrOptions
@@ -34,8 +46,11 @@ class MessagesGenerator
      * @param [type] $date
      * @return string
      */
-    public function getInfosReservation($nbrOptions, $mail, $date)
+    public function getInfosReservation($options)
     {
+        $nbrOptions = $options->getNombre();
+        $mail = $options->getMail();
+        $date = $options->getDate();
 
         return 'Vous avez réservé ' . $nbrOptions . ($nbrOptions > 1 ? " billets " : " billet ") . 'pour cette adresse mail : ' . $mail . ' pour le ' . $date->format('d-m-Y');
     }
@@ -58,7 +73,7 @@ class MessagesGenerator
 
     }
 
- //message prix billet null   
+    //message prix billet null
     public function erreurPrix()
     {
         return "Vous ne pouvez pas passer une commande de 0 €, veuillez verifier les dates de naissance indiquée.";

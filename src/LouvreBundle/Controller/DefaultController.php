@@ -4,20 +4,21 @@ namespace LouvreBundle\Controller;
 
 use LouvreBundle\Entity\Billet;
 //use LouvreBundle\Services\Calcul;
-use LouvreBundle\Entity\BilletsOption;
-use LouvreBundle\Entity\TicketsCollection;
-use LouvreBundle\Form\BilletsOptionType;
-use LouvreBundle\Form\TicketsCollectionType;
-use LouvreBundle\Handler\HandlerCommandes;
-use LouvreBundle\Handler\HandlerOptions;
 use LouvreBundle\Services\Mail;
-use LouvreBundle\Services\MessagesGenerator;
 use LouvreBundle\Services\Outils;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use LouvreBundle\Entity\BilletsOption;
+use LouvreBundle\Form\BilletsOptionType;
+use LouvreBundle\Handler\HandlerOptions;
+use LouvreBundle\Entity\TicketsCollection;
+use LouvreBundle\Handler\HandlerCommandes;
+use LouvreBundle\Form\TicketsCollectionType;
+use LouvreBundle\Services\MessagesGenerator;
+use LouvreBundle\Handler\HandlerReservations;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 
 class DefaultController extends Controller
 {
@@ -33,7 +34,7 @@ class DefaultController extends Controller
     /**
      * @Route("/billets")
      */
-    public function billetsAction(Request $request, Outils $outils, HandlerOptions $handlerOptions, HandlerCommandes $handlerCmd, MessagesGenerator $messagesGenerator, Mail $mail)
+    public function billetsAction(Request $request, Outils $outils, HandlerOptions $handlerOptions,HandlerReservations $handlerReservations , HandlerCommandes $handlerCmd, MessagesGenerator $messagesGenerator, Mail $mail)
     {
         $session = $request->getSession();
         $em = $this->getDoctrine()->getManager();
@@ -41,6 +42,7 @@ class DefaultController extends Controller
 /* verification de la validité des options
 deja enregistrées dans la bdd, session en cours ou non */
         $outils->checkOptions($session);
+//initialisation des variables
         $message_alert = null;
         $message_info = null;
         $message_success = null;
@@ -73,18 +75,15 @@ deja enregistrées dans la bdd, session en cours ou non */
  *
  */
         if (null !== $session->get('option') && null === $session->get('commande')) {
+
             $step = 2;
             $collection = new TicketsCollection();
-
             $options = $session->get('option');
             $nbrOptions = $options->getNombre();
-
             //hydratation de l'objet collection tickets
-            $outils->hydrateCollection($collection, $options->getIdClient(), $options->getMail(), $options->getDate());
-
+            $outils->hydrateCollection($collection, $options);
             //generation du message d'information sur la commande
-            $message_info = $messagesGenerator->getInfosReservation($options->getNombre(), $options->getMail(), $options->getDate());
-
+            $message_info = $messagesGenerator->getInfosReservation($options);
             //parametrage de la demi journée obligatoire pour le formulaire de reservation
             $demiJourObligatoire = $outils->calculDemiJourObligatoire($session->get('option')->getDate());
             $session->set('demiJour', $demiJourObligatoire);
@@ -97,15 +96,14 @@ deja enregistrées dans la bdd, session en cours ou non */
             if ($form->isSubmitted() && $form->isValid()) {
                 //recréer les données du formulaire pour le ressoumettre en cas d'echec des verifications malgré la validation des données des entitées
                 $formulaire = $form->createView();
-
-                //verifier si le nombre de billets en options correspond au nombre commandés
-                $message_alert = $outils->verifCommande($form->getData()->getBillets()->count(), $options->getNombre());
-
-                if ($message_alert === null) {
-                    $outils->hydrateCommande($collection, $demiJourObligatoire);
-                    //verifier que le prix de la commande est supperieur a 0 euro sinon envoyer une erreur
-                    $message_alert = $outils->checkPrixTotal($collection->getPrixTotal(), $session, $collection);
+                
+                //validation de la reservation
+                $result = $handlerReservations->reservationsVerif($form, $options->getNombre(),$collection, $session, $demiJourObligatoire );
+                if($result !== null){
+                    $message_alert =$result;
                 }
+                
+
             }
         }
 /**
@@ -117,18 +115,14 @@ deja enregistrées dans la bdd, session en cours ou non */
             $formulaire = null;
             $commande = $session->get('commande');
             $billetsListeFinale = $commande->getBillets();
-
             //message d'info sur le prix total et la date de la visite avant confirmation commande
             $message_info = $messagesGenerator->messageInfosFinal($billetsListeFinale->count(), $commande->getPrixTotal(), $session->get('option')->getDate()->format('d-m-Y'));
-            //$demiJourObligatoire = $session->get('demiJour');
 
-            if ($request->isMethod('POST')) {
-                if (isset($_POST["stripeToken"])) {
-                    if ($handlerCmd->confirmPayement($_POST["stripeToken"], $commande, $session)) {
-                        $message_success = true;
-                    } else {
-                        $message_failed = true;
-                    }
+            if ($request->isMethod('POST') && isset($_POST["stripeToken"])) {
+                if ($handlerCmd->confirmPayement($_POST["stripeToken"], $commande, $session)) {
+                    $message_success = true;
+                } else {
+                    $message_failed = true;
                 }
             }
         }
@@ -157,9 +151,7 @@ deja enregistrées dans la bdd, session en cours ou non */
     {
         $em = $this->getDoctrine()->getManager();
         $dateChoisie = $request->query->get('date');
-        /* $calculService = $this->get('calcul'); */
         $placesReste = $outils->calculBilletsRestants($dateChoisie);
-
         $response = new Response(json_encode(array('placesRestantes' => $placesReste, 'date' => $placesReste)));
         $response->headers->set('Content-Type', 'application/json');
         return $response;
@@ -170,20 +162,15 @@ deja enregistrées dans la bdd, session en cours ou non */
      *
      * @Route("/annulation")
      */
-
     public function annulationAction(Request $request, Outils $outils)
     {
-
         $session = $request->getSession();
         $id = $session->get('option')->getIdClient();
         $outils->deleteOption($id);
-
         $session->set('option', null);
         $session->set('commande', null);
         $step = 1;
-
         return $this->redirect('/billets');
-
     }
 
 }
